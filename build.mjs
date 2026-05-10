@@ -26,7 +26,7 @@ async function buildHtml() {
   const rawHtml = await fs.readFile(indexPath, 'utf8');
 
   const productionHtml = rawHtml.replace(
-    /<script src="src\/content-data\.js"><\/script>\s*<script src="src\/app\.js"><\/script>/,
+    /<script src="src\/content-data\.js"><\/script>\s*<script(?:\s+type="module")?\s+src="src\/app\.js"><\/script>/,
     '<script src="app.bundle.js"></script>'
   );
 
