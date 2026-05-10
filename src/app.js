@@ -77,6 +77,7 @@ const el = {
   dashboardPromptPreview: document.getElementById('dashboard-prompt-preview'),
   dashboardReflectionPulse: document.getElementById('dashboard-reflection-pulse'),
   featureGrid: document.getElementById('feature-grid'),
+  featureMain: document.getElementById('feature-main'),
   featureAside: document.getElementById('feature-aside'),
   pageTabs: Array.from(document.querySelectorAll('.page-tab')),
   pageSections: Array.from(document.querySelectorAll('[data-pages]')),
@@ -587,11 +588,20 @@ function setActivePage(page, shouldScroll) {
 }
 
 function updateDesktopFeatureLayout(page) {
-  if (!el.featureAside) {
+  if (!el.featureGrid || !el.featureMain || !el.featureAside) {
     return;
   }
 
-  // Keep a consistent two-column desktop layout across pages.
+  const isReflection = page === 'reflection';
+
+  el.featureGrid.classList.toggle('lg:grid-cols-2', isReflection);
+  el.featureGrid.classList.toggle('lg:grid-cols-3', !isReflection);
+
+  el.featureMain.classList.toggle('lg:col-span-1', isReflection);
+  el.featureMain.classList.toggle('lg:col-span-2', !isReflection);
+
+  el.featureAside.classList.toggle('lg:col-span-1', isReflection);
+
   el.featureAside.classList.remove('lg:col-span-3');
 }
 

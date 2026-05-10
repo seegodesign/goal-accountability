@@ -44,7 +44,14 @@ const DAILY_PROMPTS = [
   'What are you proud of that no one else saw?',
   'What task is still mentally open, and what is the next step?',
   'If you repeated today for a month, where would you end up?',
-  'What can you simplify tomorrow to reduce resistance?'
+  'What can you simplify tomorrow to reduce resistance?',
+  'What is one thing you can do tomorrow to make it easier to follow through?',
+  'What is one thing you can do tomorrow to make it harder to skip?',
+  'What did you say yes to today that you want to say no to tomorrow?',
+  'What did you say no to today that you want to say yes to tomorrow?',
+  'What is one thing you can do tomorrow to celebrate a win, even if it feels small?',
+  'If you repeated today for a month, where would you end up?',
+  'If you could give tomorrow-you one piece of advice based on today, what would it be?'
 ];
 
 const GOAL_IDEAS = {
@@ -177,6 +184,7 @@ const GOAL_IDEAS = {
     'Tell someone I care about them and why'
   ],
   organization: [
+    'Make my bed first thing in the morning',
     'Tidy one area for {minutes} minutes',
     'Plan top 3 priorities for tomorrow',
     'Inbox zero sprint for {minutes} minutes',
