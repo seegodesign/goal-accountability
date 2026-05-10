@@ -213,6 +213,14 @@ function formatLongDateWithOrdinal(dateKey) {
   return `${weekday}, ${month} ${day}${ordinalSuffix(day)}, ${year}`;
 }
 
+function formatShortDate(dateKey) {
+  const d = new Date(`${dateKey}T12:00:00`);
+  const weekday = WEEKDAY_SHORT_FORMATTER.format(d);
+  const month = MONTH_FORMATTER.format(d);
+  const day = d.getDate();
+  return `${weekday}, ${month} ${day}`;
+}
+
 function bindEvents() {
   el.themeToggleBtn.addEventListener('click', () => {
     const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
@@ -1714,7 +1722,7 @@ function renderMissPatternInsights() {
       const chipClasses = isDark
         ? 'border-teal-300/60 bg-transparent text-teal-200'
         : 'border-teal-200 bg-teal-50 text-teal-800';
-      return `<span class="inline-flex rounded-full border px-3 py-1.5 text-sm ${chipClasses}">${escapeHtml(chip)}</span>`;
+      return `<span class="inline-flex max-w-full whitespace-normal break-words rounded-2xl border px-3 py-1.5 text-sm leading-relaxed ${chipClasses}">${escapeHtml(chip)}</span>`;
     })
     .join('');
 }
@@ -1894,10 +1902,10 @@ function renderLast14Table() {
 
       return `
         <tr class="border-b border-zinc-100">
-          <td class="py-2 pr-3 text-zinc-700">${escapeHtml(formatDisplayDate(day.date))}</td>
-          <td class="py-2 pr-3 text-zinc-800 font-medium">${day.done}</td>
-          <td class="py-2 pr-3 text-zinc-800 font-medium">${day.missed}</td>
-          <td class="py-2 text-zinc-600">${dominant}</td>
+          <td class="py-2 pr-2 sm:pr-3 text-zinc-700">${escapeHtml(formatShortDate(day.date))}</td>
+          <td class="py-2 pr-2 sm:pr-3 text-zinc-800 font-medium">${day.done}</td>
+          <td class="py-2 pr-2 sm:pr-3 text-zinc-800 font-medium">${day.missed}</td>
+          <td class="hidden sm:table-cell py-2 text-zinc-600">${dominant}</td>
         </tr>
       `;
     })
