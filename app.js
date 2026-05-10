@@ -678,7 +678,7 @@ function renderHeatmap() {
             : 'bg-zinc-300';
       const todayRing = point.date === today ? 'ring-1 ring-teal-300' : '';
 
-      return `<button class="heat-cell w-3.5 h-3.5 sm:w-4 sm:h-4 ${colorClass} ${todayRing} focus-ring" title="${point.date}: ${point.label}" aria-label="${point.date} ${point.label}"></button>`;
+      return `<button class="heat-cell w-2.5 h-2.5 sm:w-4 sm:h-4 ${colorClass} ${todayRing} focus-ring" title="${point.date}: ${point.label}" aria-label="${point.date} ${point.label}"></button>`;
     })
     .join('');
 }
