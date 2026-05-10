@@ -111,8 +111,8 @@
 <body class="text-zinc-900 font-body antialiased">
   <div id="confetti-layer" class="fixed inset-0 pointer-events-none overflow-hidden z-50" aria-hidden="true"></div>
 
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-    <header class="glass rounded-3xl p-6 sm:p-8 shadow-warm mb-6 sm:mb-8">
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-28">
+    <header class="glass rounded-3xl p-6 sm:p-8 shadow-warm mb-6 sm:mb-8" data-pages="dashboard">
       <div class="flex flex-col lg:flex-row gap-6 lg:gap-10 lg:items-end lg:justify-between">
         <div>
           <p id="greeting" class="text-tide-700 text-sm tracking-wide uppercase font-semibold"></p>
@@ -127,9 +127,9 @@
       </div>
     </header>
 
-    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8" id="stats-grid" aria-live="polite"></section>
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8" id="stats-grid" aria-live="polite" data-pages="dashboard"></section>
 
-    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter">
+    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="goals">
       <div class="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4">
         <div class="flex-1">
           <label for="goal-title" class="block text-sm text-zinc-600 mb-2">Add a goal</label>
@@ -148,9 +148,9 @@
       <p id="goal-feedback" class="text-sm mt-3 text-zinc-500" aria-live="polite"></p>
     </section>
 
-    <section class="grid lg:grid-cols-3 gap-6">
+    <section class="grid lg:grid-cols-3 gap-6" data-pages="goals,consistency,reflection">
       <div class="lg:col-span-2 space-y-6">
-        <article class="glass rounded-2xl p-5 sm:p-6 card-enter">
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="goals">
           <div class="flex items-center justify-between gap-3 mb-4">
             <h2 class="font-display text-2xl sm:text-3xl text-zinc-900">Your Goals</h2>
             <p id="goals-empty-label" class="text-sm text-zinc-500"></p>
@@ -158,7 +158,7 @@
           <div id="goals-list" class="grid gap-4"></div>
         </article>
 
-        <article class="glass rounded-2xl p-5 sm:p-6 card-enter">
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="consistency">
           <div class="flex items-center justify-between mb-4">
             <h2 class="font-display text-2xl sm:text-3xl text-zinc-900">Consistency Heatmap</h2>
             <span class="text-xs text-zinc-500">Last 140 days</span>
@@ -175,7 +175,7 @@
       </div>
 
       <aside class="space-y-6">
-        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" id="goal-idea-helper">
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" id="goal-idea-helper" data-pages="goals">
           <h2 class="font-display text-2xl text-zinc-900 mb-2">Need Goal Ideas?</h2>
           <p class="text-sm text-zinc-500 mb-4">Pick a focus and effort level. Tap any suggestion to add it instantly.</p>
 
@@ -210,7 +210,7 @@
           <p id="idea-helper-note" class="text-xs text-zinc-500 mt-3"></p>
         </article>
 
-        <article class="glass rounded-2xl p-5 sm:p-6 card-enter">
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="reflection">
           <h2 class="font-display text-2xl text-zinc-900 mb-3">Daily Reflection</h2>
           <p class="text-sm text-zinc-500 mb-3">A quiet place to be honest with yourself.</p>
           <textarea
@@ -222,15 +222,74 @@
           <p id="reflection-status" class="mt-2 text-xs text-zinc-500" aria-live="polite">Saved locally</p>
         </article>
 
-        <article class="glass rounded-2xl p-5 sm:p-6 card-enter">
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="reflection">
+          <h2 class="font-display text-2xl text-zinc-900 mb-3">Reflection History</h2>
+          <p class="text-sm text-zinc-500 mb-3">Browse your previous daily reflections.</p>
+
+          <div class="flex flex-wrap items-end gap-2 mb-3">
+            <label class="text-sm text-zinc-600" for="reflection-history-date">
+              Date
+              <input id="reflection-history-date" type="date" class="mt-1 rounded-xl bg-white border border-zinc-300 px-3 py-2 text-zinc-900 focus-ring" />
+            </label>
+            <button id="reflection-prev-day-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
+              Previous day
+            </button>
+            <button id="reflection-next-day-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
+              Next day
+            </button>
+          </div>
+
+          <div id="reflection-history-view" class="rounded-xl bg-white border border-zinc-200 p-3 text-zinc-800 min-h-24"></div>
+
+          <h3 class="mt-4 text-sm uppercase tracking-wide text-zinc-500">All saved reflection days</h3>
+          <div id="reflection-history-list" class="mt-2 space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+        </article>
+
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="consistency">
           <h2 class="font-display text-2xl text-zinc-900 mb-3">Daily Prompt</h2>
           <p id="prompt-box" class="text-zinc-700 leading-relaxed"></p>
-          <button id="next-prompt-btn" class="focus-ring mt-4 text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
-            New prompt
-          </button>
+          <label class="block mt-4 text-sm text-zinc-600" for="prompt-response-input">Your response</label>
+          <textarea
+            id="prompt-response-input"
+            rows="4"
+            class="mt-2 w-full rounded-xl bg-white border border-zinc-300 p-3 text-zinc-900 placeholder-zinc-400 focus-ring"
+            placeholder="Write your response and save it to your prompt journal..."
+          ></textarea>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button id="save-prompt-response-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-tide-600 hover:bg-tide-500 text-white transition-colors">
+              Save response
+            </button>
+            <button id="next-prompt-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
+              New prompt
+            </button>
+          </div>
+          <p id="prompt-response-status" class="mt-2 text-xs text-zinc-500" aria-live="polite"></p>
+        </article>
+
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="consistency">
+          <h2 class="font-display text-2xl text-zinc-900 mb-3">Past Prompt Responses</h2>
+          <p class="text-sm text-zinc-500 mb-3">Your saved answers, newest first.</p>
+          <div id="prompt-response-history" class="space-y-3"></div>
         </article>
       </aside>
     </section>
+
+    <nav class="fixed bottom-0 inset-x-0 z-40 border-t border-tide-100/80 bg-white/92 backdrop-blur-md" aria-label="Feature pages" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
+      <div class="max-w-6xl mx-auto px-3 sm:px-6 py-2 grid grid-cols-4 gap-2">
+        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200" data-page-target="dashboard" aria-pressed="false">
+          Dashboard
+        </button>
+        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200" data-page-target="goals" aria-pressed="false">
+          Goals
+        </button>
+        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200" data-page-target="consistency" aria-pressed="false">
+          Consistency
+        </button>
+        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200" data-page-target="reflection" aria-pressed="false">
+          Reflection
+        </button>
+      </div>
+    </nav>
   </main>
 
   <script src="app.js"></script>

@@ -25,7 +25,22 @@ const DAILY_PROMPTS = [
   'What is one tiny action tomorrow-you will be grateful for?',
   'What did you learn about your resistance today?',
   'If today had a theme, what was it?',
-  'What standard are you quietly raising?'
+  'What standard are you quietly raising?',
+  'What did you postpone today, and why?',
+  'Where did you follow through even when motivation was low?',
+  'What boundary protected your focus today?',
+  'What was one moment you felt fully present?',
+  'What did you avoid that deserves a 10-minute start tomorrow?',
+  'Which choice today matched your long-term self best?',
+  'What friction point should you redesign for tomorrow?',
+  'What helped your energy most today?',
+  'What would make tomorrow 5% better?',
+  'What did you learn from a miss or mistake today?',
+  'What is one promise you will keep before noon tomorrow?',
+  'What are you proud of that no one else saw?',
+  'What task is still mentally open, and what is the next step?',
+  'If you repeated today for a month, where would you end up?',
+  'What can you simplify tomorrow to reduce resistance?'
 ];
 
 const GOAL_IDEAS = {
@@ -77,6 +92,8 @@ const EFFORT_MINUTES = {
   deep: 40
 };
 
+const PAGE_IDS = ['dashboard', 'goals', 'consistency', 'reflection'];
+
 const state = loadState();
 
 const el = {
@@ -92,8 +109,19 @@ const el = {
   heatmap: document.getElementById('heatmap'),
   reflection: document.getElementById('daily-reflection'),
   reflectionStatus: document.getElementById('reflection-status'),
+  reflectionHistoryDate: document.getElementById('reflection-history-date'),
+  reflectionPrevDayBtn: document.getElementById('reflection-prev-day-btn'),
+  reflectionNextDayBtn: document.getElementById('reflection-next-day-btn'),
+  reflectionHistoryView: document.getElementById('reflection-history-view'),
+  reflectionHistoryList: document.getElementById('reflection-history-list'),
   promptBox: document.getElementById('prompt-box'),
+  promptResponseInput: document.getElementById('prompt-response-input'),
+  savePromptResponseBtn: document.getElementById('save-prompt-response-btn'),
+  promptResponseStatus: document.getElementById('prompt-response-status'),
+  promptResponseHistory: document.getElementById('prompt-response-history'),
   nextPromptBtn: document.getElementById('next-prompt-btn'),
+  pageTabs: Array.from(document.querySelectorAll('.page-tab')),
+  pageSections: Array.from(document.querySelectorAll('[data-pages]')),
   confettiLayer: document.getElementById('confetti-layer'),
   ideaFocus: document.getElementById('idea-focus'),
   ideaEffort: document.getElementById('idea-effort'),
@@ -103,6 +131,7 @@ const el = {
 };
 
 let promptTimer = null;
+const expandedGoalIds = new Set();
 
 init();
 
@@ -121,6 +150,10 @@ function loadState() {
       goals: [],
       reflections: {},
       selectedPromptIndex: 0,
+      promptResponses: [],
+      promptDraft: '',
+      selectedPage: 'dashboard',
+      selectedReflectionDate: todayKey(),
       lastCelebrationDate: null
     };
   }
@@ -131,6 +164,10 @@ function loadState() {
       goals: Array.isArray(parsed.goals) ? parsed.goals : [],
       reflections: parsed.reflections && typeof parsed.reflections === 'object' ? parsed.reflections : {},
       selectedPromptIndex: Number.isInteger(parsed.selectedPromptIndex) ? parsed.selectedPromptIndex : 0,
+      promptResponses: normalizePromptResponses(parsed.promptResponses),
+      promptDraft: typeof parsed.promptDraft === 'string' ? parsed.promptDraft : '',
+      selectedPage: normalizePage(parsed.selectedPage),
+      selectedReflectionDate: normalizeDateKey(parsed.selectedReflectionDate) || todayKey(),
       lastCelebrationDate: typeof parsed.lastCelebrationDate === 'string' ? parsed.lastCelebrationDate : null
     };
   } catch {
@@ -138,6 +175,10 @@ function loadState() {
       goals: [],
       reflections: {},
       selectedPromptIndex: 0,
+      promptResponses: [],
+      promptDraft: '',
+      selectedPage: 'dashboard',
+      selectedReflectionDate: todayKey(),
       lastCelebrationDate: null
     };
   }
@@ -176,12 +217,58 @@ function bindEvents() {
     state.reflections[todayKey()] = el.reflection.value;
     saveState();
     el.reflectionStatus.textContent = `Saved locally at ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    renderReflectionHistory();
+  });
+
+  el.reflectionHistoryDate.addEventListener('change', () => {
+    setSelectedReflectionDate(el.reflectionHistoryDate.value);
+  });
+
+  el.reflectionPrevDayBtn.addEventListener('click', () => {
+    setSelectedReflectionDate(shiftDateKey(state.selectedReflectionDate || todayKey(), -1));
+  });
+
+  el.reflectionNextDayBtn.addEventListener('click', () => {
+    const next = shiftDateKey(state.selectedReflectionDate || todayKey(), 1);
+    const capped = next > todayKey() ? todayKey() : next;
+    setSelectedReflectionDate(capped);
+  });
+
+  el.reflectionHistoryList.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-reflection-date]');
+    if (!btn) {
+      return;
+    }
+    setSelectedReflectionDate(btn.dataset.reflectionDate);
   });
 
   el.nextPromptBtn.addEventListener('click', () => {
     state.selectedPromptIndex = (state.selectedPromptIndex + 1) % DAILY_PROMPTS.length;
+    state.promptDraft = '';
     saveState();
     renderPrompt();
+    hydratePromptResponseInput();
+    el.promptResponseStatus.textContent = 'Prompt refreshed. Ready when you are.';
+  });
+
+  el.savePromptResponseBtn.addEventListener('click', submitPromptResponse);
+  el.promptResponseInput.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+      event.preventDefault();
+      submitPromptResponse();
+    }
+  });
+
+  el.promptResponseInput.addEventListener('input', () => {
+    state.promptDraft = el.promptResponseInput.value;
+    saveState();
+    el.promptResponseStatus.textContent = 'Draft saved locally.';
+  });
+
+  el.pageTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      setActivePage(tab.dataset.pageTarget, true);
+    });
   });
 
   el.refreshIdeasBtn.addEventListener('click', renderGoalIdeas);
@@ -210,6 +297,10 @@ function startPromptRotation() {
   }
 
   promptTimer = setInterval(() => {
+    if (el.promptResponseInput.value.trim()) {
+      return;
+    }
+
     state.selectedPromptIndex = (state.selectedPromptIndex + 1) % DAILY_PROMPTS.length;
     saveState();
     renderPrompt();
@@ -261,12 +352,52 @@ function createGoal(title) {
 
 function renderAll() {
   hydrateReflection();
+  renderReflectionHistory();
   renderPrompt();
+  hydratePromptResponseInput();
+  renderPromptResponseHistory();
   renderGoalIdeas();
   renderStats();
   renderGoals();
   renderHeatmap();
+  setActivePage(state.selectedPage || 'dashboard', false);
   maybeCelebrate();
+}
+
+function setActivePage(page, shouldScroll) {
+  const nextPage = normalizePage(page);
+  state.selectedPage = nextPage;
+
+  for (const section of el.pageSections) {
+    const pages = section.dataset.pages
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+    section.classList.toggle('hidden', !pages.includes(nextPage));
+  }
+
+  for (const tab of el.pageTabs) {
+    const isActive = tab.dataset.pageTarget === nextPage;
+    tab.setAttribute('aria-pressed', String(isActive));
+    tab.classList.toggle('bg-tide-600', isActive);
+    tab.classList.toggle('text-white', isActive);
+    tab.classList.toggle('border-tide-600', isActive);
+    tab.classList.toggle('shadow-warm', isActive);
+    tab.classList.toggle('bg-white', !isActive);
+    tab.classList.toggle('text-zinc-600', !isActive);
+    tab.classList.toggle('border-zinc-200', !isActive);
+  }
+
+  saveState();
+
+  if (shouldScroll) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function normalizePage(value) {
+  const page = typeof value === 'string' ? value : '';
+  return PAGE_IDS.includes(page) ? page : 'dashboard';
 }
 
 function renderGoalIdeas() {
@@ -303,9 +434,179 @@ function hydrateReflection() {
   el.reflection.value = state.reflections[todayKey()] || '';
 }
 
+function renderReflectionHistory() {
+  const today = todayKey();
+  const selected = normalizeDateKey(state.selectedReflectionDate) || today;
+  state.selectedReflectionDate = selected;
+
+  el.reflectionHistoryDate.value = selected;
+  el.reflectionHistoryDate.max = today;
+  el.reflectionNextDayBtn.disabled = selected >= today;
+  el.reflectionNextDayBtn.classList.toggle('opacity-50', selected >= today);
+  el.reflectionNextDayBtn.classList.toggle('cursor-not-allowed', selected >= today);
+
+  const selectedText = state.reflections[selected] || '';
+  if (selectedText.trim()) {
+    const safeText = escapeHtml(selectedText).replace(/\n/g, '<br>');
+    el.reflectionHistoryView.innerHTML = `
+      <p class="text-xs uppercase tracking-wide text-zinc-500">${escapeHtml(formatDisplayDate(selected))}</p>
+      <p class="mt-2 leading-relaxed">${safeText}</p>
+    `;
+  } else {
+    el.reflectionHistoryView.innerHTML = `
+      <p class="text-xs uppercase tracking-wide text-zinc-500">${escapeHtml(formatDisplayDate(selected))}</p>
+      <p class="mt-2 text-zinc-500">No reflection saved for this day.</p>
+    `;
+  }
+
+  const reflectionDates = Object.keys(state.reflections)
+    .filter((key) => typeof state.reflections[key] === 'string' && state.reflections[key].trim())
+    .sort((a, b) => b.localeCompare(a));
+
+  if (reflectionDates.length === 0) {
+    el.reflectionHistoryList.innerHTML = `
+      <div class="rounded-xl border border-dashed border-zinc-300 p-3 text-sm text-zinc-500 bg-white/70">
+        No past reflections yet.
+      </div>
+    `;
+    return;
+  }
+
+  el.reflectionHistoryList.innerHTML = reflectionDates
+    .map((dateKey) => {
+      const isActive = dateKey === selected;
+      const preview = state.reflections[dateKey].trim().slice(0, 100);
+      const suffix = state.reflections[dateKey].trim().length > 100 ? '...' : '';
+
+      return `
+        <button class="focus-ring w-full text-left rounded-xl border p-3 transition-colors ${isActive ? 'border-tide-500 bg-tide-50' : 'border-zinc-200 bg-white hover:bg-zinc-50'}" data-reflection-date="${dateKey}">
+          <p class="text-xs uppercase tracking-wide text-zinc-500">${escapeHtml(formatDisplayDate(dateKey))}</p>
+          <p class="mt-1 text-sm text-zinc-700">${escapeHtml(preview)}${suffix}</p>
+        </button>
+      `;
+    })
+    .join('');
+}
+
+function setSelectedReflectionDate(dateKey) {
+  const normalized = normalizeDateKey(dateKey);
+  if (!normalized) {
+    return;
+  }
+
+  const capped = normalized > todayKey() ? todayKey() : normalized;
+  state.selectedReflectionDate = capped;
+  saveState();
+  renderReflectionHistory();
+}
+
+function shiftDateKey(dateKey, deltaDays) {
+  const normalized = normalizeDateKey(dateKey) || todayKey();
+  const d = new Date(`${normalized}T12:00:00`);
+  d.setDate(d.getDate() + deltaDays);
+  return d.toISOString().slice(0, 10);
+}
+
+function normalizeDateKey(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(trimmed) ? trimmed : null;
+}
+
 function renderPrompt() {
+  el.promptBox.textContent = getCurrentPrompt();
+}
+
+function getCurrentPrompt() {
   const idx = state.selectedPromptIndex % DAILY_PROMPTS.length;
-  el.promptBox.textContent = DAILY_PROMPTS[idx];
+  return DAILY_PROMPTS[idx];
+}
+
+function hydratePromptResponseInput() {
+  el.promptResponseInput.value = state.promptDraft || '';
+}
+
+function submitPromptResponse() {
+  const response = el.promptResponseInput.value.trim();
+  if (!response) {
+    el.promptResponseStatus.textContent = 'Write a response before saving.';
+    return;
+  }
+
+  state.promptResponses.unshift({
+    id: crypto.randomUUID(),
+    dateKey: todayKey(),
+    prompt: getCurrentPrompt(),
+    response,
+    createdAt: new Date().toISOString()
+  });
+
+  if (state.promptResponses.length > 250) {
+    state.promptResponses = state.promptResponses.slice(0, 250);
+  }
+
+  state.promptDraft = '';
+  saveState();
+
+  el.promptResponseInput.value = '';
+  el.promptResponseStatus.textContent = 'Response saved to your prompt journal.';
+  renderPromptResponseHistory();
+}
+
+function renderPromptResponseHistory() {
+  if (state.promptResponses.length === 0) {
+    el.promptResponseHistory.innerHTML = `
+      <div class="rounded-xl border border-dashed border-zinc-300 p-4 text-sm text-zinc-500 bg-white/70">
+        No prompt responses yet. Save your first one above.
+      </div>
+    `;
+    return;
+  }
+
+  el.promptResponseHistory.innerHTML = state.promptResponses
+    .map((entry) => {
+      const safeResponse = escapeHtml(entry.response).replace(/\n/g, '<br>');
+      return `
+        <article class="rounded-xl bg-white border border-zinc-200 p-3">
+          <p class="text-xs uppercase tracking-wide text-zinc-500">${escapeHtml(formatPromptResponseTimestamp(entry))}</p>
+          <p class="mt-2 text-sm text-zinc-600">${escapeHtml(entry.prompt)}</p>
+          <p class="mt-2 text-zinc-800 leading-relaxed">${safeResponse}</p>
+        </article>
+      `;
+    })
+    .join('');
+}
+
+function formatPromptResponseTimestamp(entry) {
+  const fallbackDate = typeof entry.dateKey === 'string' ? `${entry.dateKey}T12:00:00` : null;
+  const source = typeof entry.createdAt === 'string' ? entry.createdAt : fallbackDate;
+  const parsed = source ? new Date(source) : null;
+
+  if (!parsed || Number.isNaN(parsed.getTime())) {
+    return entry.dateKey || 'Unknown date';
+  }
+
+  return `${DATE_FORMATTER.format(parsed)} at ${parsed.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+function normalizePromptResponses(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry) => entry && typeof entry === 'object')
+    .map((entry) => ({
+      id: typeof entry.id === 'string' ? entry.id : crypto.randomUUID(),
+      dateKey: typeof entry.dateKey === 'string' ? entry.dateKey : todayKey(),
+      prompt: typeof entry.prompt === 'string' ? entry.prompt : '',
+      response: typeof entry.response === 'string' ? entry.response : '',
+      createdAt: typeof entry.createdAt === 'string' ? entry.createdAt : null
+    }))
+    .filter((entry) => entry.prompt && entry.response);
 }
 
 function rotateMotivation(instant) {
@@ -431,6 +732,7 @@ function deleteGoal(goalId) {
   }
 
   state.goals = state.goals.filter((g) => g.id !== goalId);
+  expandedGoalIds.delete(goalId);
   saveState();
   renderAll();
 }
@@ -534,6 +836,7 @@ function renderGoals() {
   el.goalsList.innerHTML = state.goals
     .map((goal, idx) => {
       const stats = computeGoalStats(goal);
+      const isExpanded = expandedGoalIds.has(goal.id);
       goal.streakCount = stats.currentStreak;
       goal.longestStreak = stats.longestStreak;
       const status = goal.completionHistory[key]?.status;
@@ -542,61 +845,73 @@ function renderGoals() {
 
       return `
         <section class="rounded-2xl bg-white border border-zinc-200 p-4 sm:p-5 card-enter shadow-sm" style="animation-delay:${idx * 40}ms">
-          <div class="flex gap-3 justify-between items-start">
-            <div>
-              <h3 class="text-xl sm:text-2xl font-semibold text-zinc-900">${escapeHtml(goal.title)}</h3>
-              <p class="text-xs text-zinc-500 mt-1">Created ${formatDisplayDate(goal.createdDate)}</p>
+          <button class="focus-ring toggle-goal w-full rounded-xl p-2 -m-2 text-left hover:bg-zinc-50 transition-colors" data-goal-id="${goal.id}" aria-expanded="${isExpanded}" aria-controls="goal-panel-${goal.id}">
+            <div class="flex gap-3 items-start justify-between">
+              <div>
+                <h3 class="text-xl sm:text-2xl font-semibold text-zinc-900">${escapeHtml(goal.title)}</h3>
+                <p class="text-xs text-zinc-500 mt-1">Created ${formatDisplayDate(goal.createdDate)}</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-xs uppercase tracking-wide text-zinc-500">${stats.completionPct}% complete</p>
+                <p class="mt-1 text-sm font-semibold text-teal-700">Streak ${goal.streakCount}</p>
+                <p class="mt-1 text-xs text-zinc-500">${isExpanded ? 'Tap to collapse' : 'Tap to expand'}</p>
+              </div>
             </div>
-            <button class="focus-ring delete-goal text-zinc-500 hover:text-red-600 transition-colors px-2 py-1" data-goal-id="${goal.id}" aria-label="Delete goal ${escapeHtml(goal.title)}">
-              Delete
-            </button>
-          </div>
+          </button>
 
-          <div class="grid sm:grid-cols-3 gap-3 mt-4">
-            <div class="rounded-xl bg-teal-50 p-3 border border-teal-200">
-              <p class="text-xs uppercase tracking-wide text-zinc-600">Current streak</p>
-              <p class="text-2xl font-bold text-teal-700 streak-value" data-target="${goal.streakCount}">${goal.streakCount}</p>
+          <div id="goal-panel-${goal.id}" class="${isExpanded ? 'mt-4' : 'hidden'}">
+            <div class="flex justify-end">
+              <button class="focus-ring delete-goal text-zinc-500 hover:text-red-600 transition-colors px-2 py-1" data-goal-id="${goal.id}" aria-label="Delete goal ${escapeHtml(goal.title)}">
+                Delete
+              </button>
             </div>
-            <div class="rounded-xl bg-teal-50 p-3 border border-teal-200">
-              <p class="text-xs uppercase tracking-wide text-zinc-600">Longest</p>
-              <p class="text-2xl font-bold text-teal-700">${goal.longestStreak}</p>
+
+            <div class="grid sm:grid-cols-3 gap-3 mt-2">
+              <div class="rounded-xl bg-teal-50 p-3 border border-teal-200">
+                <p class="text-xs uppercase tracking-wide text-zinc-600">Current streak</p>
+                <p class="text-2xl font-bold text-teal-700 streak-value" data-target="${goal.streakCount}">${goal.streakCount}</p>
+              </div>
+              <div class="rounded-xl bg-teal-50 p-3 border border-teal-200">
+                <p class="text-xs uppercase tracking-wide text-zinc-600">Longest</p>
+                <p class="text-2xl font-bold text-teal-700">${goal.longestStreak}</p>
+              </div>
+              <div class="rounded-xl bg-teal-50 p-3 border border-teal-200">
+                <p class="text-xs uppercase tracking-wide text-zinc-600">Completion</p>
+                <p class="text-2xl font-bold text-teal-700">${stats.completionPct}%</p>
+              </div>
             </div>
-            <div class="rounded-xl bg-teal-50 p-3 border border-teal-200">
-              <p class="text-xs uppercase tracking-wide text-zinc-600">Completion</p>
-              <p class="text-2xl font-bold text-teal-700">${stats.completionPct}%</p>
+
+            <div class="mt-4">
+              <div class="h-2 rounded-full bg-zinc-200 overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${stats.completionPct}" aria-label="Goal completion percentage">
+                <div class="h-full bg-gradient-to-r from-teal-500 to-cyan-400 transition-all duration-500" style="width:${stats.completionPct}%"></div>
+              </div>
             </div>
-          </div>
 
-          <div class="mt-4">
-            <div class="h-2 rounded-full bg-zinc-200 overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${stats.completionPct}" aria-label="Goal completion percentage">
-              <div class="h-full bg-gradient-to-r from-teal-500 to-cyan-400 transition-all duration-500" style="width:${stats.completionPct}%"></div>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button class="focus-ring mark-btn rounded-lg px-4 py-2 text-sm font-semibold transition-all ${status === 'done' ? 'bg-teal-600 text-white animate-pulseSoft' : 'bg-zinc-100 hover:bg-teal-100 text-zinc-700'}" data-goal-id="${goal.id}" data-status="done">
+                Done ✅
+              </button>
+              <button class="focus-ring mark-btn rounded-lg px-4 py-2 text-sm font-semibold transition-all ${status === 'missed' ? 'bg-red-500 text-white' : 'bg-zinc-100 hover:bg-red-100 text-zinc-700'}" data-goal-id="${goal.id}" data-status="missed">
+                Missed ❌
+              </button>
             </div>
-          </div>
 
-          <div class="mt-4 flex flex-wrap gap-2">
-            <button class="focus-ring mark-btn rounded-lg px-4 py-2 text-sm font-semibold transition-all ${status === 'done' ? 'bg-teal-600 text-white animate-pulseSoft' : 'bg-zinc-100 hover:bg-teal-100 text-zinc-700'}" data-goal-id="${goal.id}" data-status="done">
-              Done ✅
-            </button>
-            <button class="focus-ring mark-btn rounded-lg px-4 py-2 text-sm font-semibold transition-all ${status === 'missed' ? 'bg-red-500 text-white' : 'bg-zinc-100 hover:bg-red-100 text-zinc-700'}" data-goal-id="${goal.id}" data-status="missed">
-              Missed ❌
-            </button>
-          </div>
+            <label class="block mt-4 text-sm text-zinc-600" for="note-${goal.id}">Today note (optional)</label>
+            <textarea id="note-${goal.id}" data-goal-id="${goal.id}" class="goal-note focus-ring mt-2 w-full rounded-xl bg-white border border-zinc-300 p-3 text-zinc-900 placeholder-zinc-400" rows="2" placeholder="A quick reflection for this goal...">${escapeHtml(note)}</textarea>
 
-          <label class="block mt-4 text-sm text-zinc-600" for="note-${goal.id}">Today note (optional)</label>
-          <textarea id="note-${goal.id}" data-goal-id="${goal.id}" class="goal-note focus-ring mt-2 w-full rounded-xl bg-white border border-zinc-300 p-3 text-zinc-900 placeholder-zinc-400" rows="2" placeholder="A quick reflection for this goal...">${escapeHtml(note)}</textarea>
-
-          <div class="mt-4 flex items-center gap-1.5" aria-label="Recent history">
-            ${miniHistory
-              .map((entry) => {
-                const color =
-                  entry.status === 'done'
-                    ? 'bg-teal-500'
-                    : entry.status === 'missed'
-                      ? 'bg-red-500'
-                      : 'bg-zinc-300';
-                return `<span class="mini-cell w-3 h-3 ${color}" title="${entry.date}: ${entry.status || 'no data'}"></span>`;
-              })
-              .join('')}
+            <div class="mt-4 flex items-center gap-1.5" aria-label="Recent history">
+              ${miniHistory
+                .map((entry) => {
+                  const color =
+                    entry.status === 'done'
+                      ? 'bg-teal-500'
+                      : entry.status === 'missed'
+                        ? 'bg-red-500'
+                        : 'bg-zinc-300';
+                  return `<span class="mini-cell w-3 h-3 ${color}" title="${entry.date}: ${entry.status || 'no data'}"></span>`;
+                })
+                .join('')}
+            </div>
           </div>
         </section>
       `;
@@ -629,6 +944,23 @@ function animateStreaks() {
 }
 
 function wireGoalActions() {
+  document.querySelectorAll('.toggle-goal').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const goalId = btn.dataset.goalId;
+      if (!goalId) {
+        return;
+      }
+
+      if (expandedGoalIds.has(goalId)) {
+        expandedGoalIds.delete(goalId);
+      } else {
+        expandedGoalIds.add(goalId);
+      }
+
+      renderGoals();
+    });
+  });
+
   document.querySelectorAll('.mark-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       markGoal(btn.dataset.goalId, btn.dataset.status);
