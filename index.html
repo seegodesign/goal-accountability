@@ -50,6 +50,7 @@
         radial-gradient(circle at 88% 82%, rgba(6, 182, 212, 0.13), transparent 38%),
         linear-gradient(180deg, #ffffff 0%, #f8fafc 52%, #f0fdfa 100%);
       background-repeat: no-repeat;
+      background-attachment: fixed;
       background-size: 100% 100%, 100% 100%, 100% 100%;
       min-height: 100vh;
     }
@@ -106,6 +107,98 @@
       outline: 2px solid #14b8a6;
       outline-offset: 2px;
     }
+
+    .idea-chip {
+      display: inline-grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 0.22rem;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .idea-chip__prefix {
+      white-space: nowrap;
+    }
+
+    .idea-chip__viewport {
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .idea-chip__text {
+      display: inline-block;
+      white-space: nowrap;
+      will-change: transform;
+    }
+
+    .idea-chip.is-scrollable:hover .idea-chip__text,
+    .idea-chip.is-scrollable:focus-visible .idea-chip__text {
+      animation: chipMarquee var(--scroll-duration, 6s) linear infinite alternate;
+    }
+
+    @keyframes chipMarquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(-1 * var(--scroll-distance, 0px))); }
+    }
+
+    body.theme-dark {
+      color-scheme: dark;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(20, 184, 166, 0.22), transparent 35%),
+        radial-gradient(circle at 88% 82%, rgba(6, 182, 212, 0.18), transparent 38%),
+        linear-gradient(180deg, #0a0f13 0%, #0f1720 52%, #0f1a22 100%);
+      background-attachment: fixed;
+    }
+
+    body.theme-dark .glass {
+      background: rgba(15, 23, 32, 0.82);
+      border: 1px solid rgba(45, 212, 191, 0.22);
+    }
+
+    body.theme-dark .text-zinc-900 { color: #f3f4f6 !important; }
+    body.theme-dark .text-zinc-800 { color: #e5e7eb !important; }
+    body.theme-dark .text-zinc-700 { color: #d1d5db !important; }
+    body.theme-dark .text-zinc-600 { color: #9ca3af !important; }
+    body.theme-dark .text-zinc-500 { color: #94a3b8 !important; }
+
+    body.theme-dark .bg-white,
+    body.theme-dark .bg-white\/70,
+    body.theme-dark .bg-white\/86 {
+      background-color: rgba(15, 23, 32, 0.9) !important;
+    }
+
+    body.theme-dark .bg-zinc-100 { background-color: #1f2937 !important; }
+    body.theme-dark .bg-zinc-200 { background-color: #334155 !important; }
+    body.theme-dark .bg-zinc-300 { background-color: #475569 !important; }
+    body.theme-dark .bg-teal-50 { background-color: rgba(13, 148, 136, 0.14) !important; }
+
+    body.theme-dark .border-zinc-200,
+    body.theme-dark .border-zinc-300,
+    body.theme-dark .border-teal-200,
+    body.theme-dark .border-dashed {
+      border-color: rgba(148, 163, 184, 0.35) !important;
+    }
+
+    body.theme-dark .hover\:bg-zinc-50:hover {
+      background-color: rgba(51, 65, 85, 0.45) !important;
+    }
+
+    body.theme-dark .hover\:bg-tide-50:hover {
+      background-color: rgba(20, 184, 166, 0.15) !important;
+    }
+
+    body.theme-dark .hover\:bg-teal-50:hover {
+      background-color: rgba(20, 184, 166, 0.15) !important;
+    }
+
+    body.theme-dark .hover\:bg-red-100:hover {
+      background-color: rgba(239, 68, 68, 0.2) !important;
+    }
+
+    body.theme-dark .hover\:bg-teal-100:hover {
+      background-color: rgba(20, 184, 166, 0.22) !important;
+    }
   </style>
 </head>
 <body class="text-zinc-900 font-body antialiased">
@@ -113,13 +206,18 @@
 
   <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-28">
     <header class="glass rounded-3xl p-6 sm:p-8 shadow-warm mb-6 sm:mb-8" data-pages="dashboard">
-      <div class="flex flex-col lg:flex-row gap-6 lg:gap-10 lg:items-end lg:justify-between">
-        <div>
-          <p id="greeting" class="text-tide-700 text-sm tracking-wide uppercase font-semibold"></p>
-          <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl leading-tight text-zinc-900 mt-2">
-            Quiet Commitments
-          </h1>
-          <p id="today-date" class="mt-3 text-zinc-600 text-base sm:text-lg"></p>
+      <div class="flex flex-col gap-2 lg:gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div>
+            <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl leading-tight text-zinc-900 mt-2">
+              Quiet Commitments
+            </h1>
+            <p id="today-date" class="mt-3 text-zinc-600 text-base sm:text-lg"></p>
+          </div>
+          <button id="theme-toggle-btn" class="focus-ring inline-flex items-center gap-2 rounded-xl px-3 py-2 bg-white border border-zinc-300 text-zinc-700 text-sm font-semibold hover:bg-tide-50 transition-colors sm:mt-1 self-start" aria-label="Toggle light and dark mode" aria-pressed="false">
+            <span id="theme-toggle-icon" aria-hidden="true">🌙</span>
+            <span id="theme-toggle-label">Dark mode</span>
+          </button>
         </div>
         <blockquote class="max-w-xl">
           <p id="motivation" class="text-lg sm:text-2xl leading-relaxed text-zinc-800 italic"></p>
@@ -128,6 +226,91 @@
     </header>
 
     <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8" id="stats-grid" aria-live="polite" data-pages="dashboard"></section>
+
+    <section class="grid lg:grid-cols-3 gap-6 mb-6 sm:mb-8" data-pages="dashboard">
+      <article class="glass rounded-2xl p-5 sm:p-6 card-enter lg:col-span-2">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <h2 class="font-display text-2xl sm:text-3xl text-zinc-900">Today's Focus</h2>
+          <span id="dashboard-focus-badge" class="text-xs px-2 py-1 rounded-full bg-tide-50 text-tide-700 border border-tide-200">Ready</span>
+        </div>
+        <p id="dashboard-focus-summary" class="text-zinc-700 leading-relaxed"></p>
+        <div id="dashboard-week-trend" class="mt-4"></div>
+      </article>
+
+      <article class="glass rounded-2xl p-5 sm:p-6 card-enter">
+        <h2 class="font-display text-2xl text-zinc-900 mb-2">Streak Spotlight</h2>
+        <div id="dashboard-streak-spotlight" class="text-sm text-zinc-700"></div>
+      </article>
+
+      <article class="glass rounded-2xl p-5 sm:p-6 card-enter lg:col-span-2">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <h2 class="font-display text-2xl sm:text-3xl text-zinc-900">In Progress Today</h2>
+          <span id="dashboard-in-progress-count" class="text-xs text-zinc-500"></span>
+        </div>
+        <div id="dashboard-in-progress-list" class="space-y-3"></div>
+      </article>
+
+      <article class="glass rounded-2xl p-5 sm:p-6 card-enter">
+        <h2 class="font-display text-2xl text-zinc-900 mb-2">Daily Prompt</h2>
+        <p id="dashboard-prompt-preview" class="text-sm text-zinc-700 leading-relaxed"></p>
+        <button class="focus-ring mt-3 text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700" data-page-jump="consistency">
+          Continue Writing
+        </button>
+      </article>
+
+      <article class="glass rounded-2xl p-5 sm:p-6 card-enter lg:col-span-3">
+        <h2 class="font-display text-2xl text-zinc-900 mb-2">Reflection Pulse</h2>
+        <div id="dashboard-reflection-pulse" class="text-sm text-zinc-700"></div>
+      </article>
+    </section>
+
+    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="consistency">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="font-display text-3xl sm:text-4xl text-zinc-900">Consistency</h2>
+          <p class="mt-1 text-sm sm:text-base text-zinc-600">Track patterns, capture prompts, and build momentum over time.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="consistency">
+      <h2 class="font-display text-2xl text-zinc-900 mb-3">Daily Prompt</h2>
+      <p id="prompt-box" class="text-zinc-700 leading-relaxed"></p>
+      <label class="block mt-4 text-sm text-zinc-600" for="prompt-response-input">Your response</label>
+      <textarea
+        id="prompt-response-input"
+        rows="5"
+        class="mt-2 w-full rounded-xl bg-white border border-zinc-300 p-3 text-zinc-900 placeholder-zinc-400 focus-ring"
+        placeholder="Write your response and save it to your prompt journal..."
+      ></textarea>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button id="save-prompt-response-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-tide-600 hover:bg-tide-500 text-white transition-colors">
+          Save response
+        </button>
+        <button id="next-prompt-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
+          New prompt
+        </button>
+      </div>
+      <p id="prompt-response-status" class="mt-2 text-xs text-zinc-500" aria-live="polite"></p>
+    </section>
+
+    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="reflection">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="font-display text-3xl sm:text-4xl text-zinc-900">Reflection</h2>
+          <p class="mt-1 text-sm sm:text-base text-zinc-600">Review your days, notice trends, and turn insight into better choices.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="goals">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="font-display text-3xl sm:text-4xl text-zinc-900">Goals</h2>
+          <p class="mt-1 text-sm sm:text-base text-zinc-600">Define what matters, then follow through one day at a time.</p>
+        </div>
+      </div>
+    </section>
 
     <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="goals">
       <div class="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4">
@@ -148,8 +331,8 @@
       <p id="goal-feedback" class="text-sm mt-3 text-zinc-500" aria-live="polite"></p>
     </section>
 
-    <section class="grid lg:grid-cols-3 gap-6" data-pages="goals,consistency,reflection">
-      <div class="lg:col-span-2 space-y-6">
+    <section id="feature-grid" class="grid lg:grid-cols-3 gap-6 mb-12" data-pages="goals,consistency,reflection">
+      <div class="lg:col-span-2 flex flex-col gap-6" data-pages="goals,consistency">
         <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="goals">
           <div class="flex items-center justify-between gap-3 mb-4">
             <h2 class="font-display text-2xl sm:text-3xl text-zinc-900">Your Goals</h2>
@@ -164,18 +347,19 @@
             <span class="text-xs text-zinc-500">Last 140 days</span>
           </div>
           <div class="overflow-x-auto pb-1">
-            <div id="heatmap" class="inline-grid grid-flow-col grid-rows-7 auto-cols-max gap-1 sm:gap-1.5"></div>
+            <div id="heatmap" class="inline-grid grid-flow-row auto-rows-max gap-1 sm:gap-1.5" style="grid-template-columns: repeat(20, max-content);"></div>
           </div>
           <div class="flex items-center gap-3 mt-4 text-xs text-zinc-500">
             <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-zinc-300"></span>No data</span>
             <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-red-600/80"></span>Missed</span>
+            <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-500"></span>Partial</span>
             <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-tide-500"></span>Done</span>
           </div>
         </article>
       </div>
 
-      <aside class="space-y-6">
-        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" id="goal-idea-helper" data-pages="goals">
+      <aside id="feature-aside" class="flex flex-col gap-6">
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter sticky top-3 sm:top-4 z-30" id="goal-idea-helper" data-pages="goals">
           <h2 class="font-display text-2xl text-zinc-900 mb-2">Need Goal Ideas?</h2>
           <p class="text-sm text-zinc-500 mb-4">Pick a focus and effort level. Tap any suggestion to add it instantly.</p>
 
@@ -202,8 +386,12 @@
             </label>
           </div>
 
-          <button id="refresh-ideas-btn" class="focus-ring mb-3 text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
-            New ideas
+          <button id="refresh-ideas-btn" class="focus-ring mb-3 text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700 inline-flex items-center gap-2">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" class="w-4 h-4" aria-hidden="true">
+              <path d="M16.1 10a6.1 6.1 0 1 1-1.79-4.31" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16.1 4.8v2.9h-2.9" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Refresh ideas</span>
           </button>
 
           <div id="idea-results" class="flex flex-wrap gap-2" aria-live="polite"></div>
@@ -246,47 +434,42 @@
         </article>
 
         <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="consistency">
-          <h2 class="font-display text-2xl text-zinc-900 mb-3">Daily Prompt</h2>
-          <p id="prompt-box" class="text-zinc-700 leading-relaxed"></p>
-          <label class="block mt-4 text-sm text-zinc-600" for="prompt-response-input">Your response</label>
-          <textarea
-            id="prompt-response-input"
-            rows="4"
-            class="mt-2 w-full rounded-xl bg-white border border-zinc-300 p-3 text-zinc-900 placeholder-zinc-400 focus-ring"
-            placeholder="Write your response and save it to your prompt journal..."
-          ></textarea>
-          <div class="mt-3 flex flex-wrap gap-2">
-            <button id="save-prompt-response-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-tide-600 hover:bg-tide-500 text-white transition-colors">
-              Save response
-            </button>
-            <button id="next-prompt-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
-              New prompt
-            </button>
-          </div>
-          <p id="prompt-response-status" class="mt-2 text-xs text-zinc-500" aria-live="polite"></p>
-        </article>
-
-        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="consistency">
           <h2 class="font-display text-2xl text-zinc-900 mb-3">Past Prompt Responses</h2>
           <p class="text-sm text-zinc-500 mb-3">Your saved answers, newest first.</p>
-          <div id="prompt-response-history" class="space-y-3"></div>
+          <div id="prompt-response-history" class="space-y-3 max-h-[34rem] overflow-y-auto pr-1"></div>
         </article>
       </aside>
     </section>
 
-    <nav class="fixed bottom-0 inset-x-0 z-40 border-t border-tide-100/80 bg-white/92 backdrop-blur-md" aria-label="Feature pages" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
+    <nav class="fixed bottom-0 inset-x-0 z-40 border-t border-tide-100/20 bg-white/92 backdrop-blur-md" aria-label="Feature pages" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
       <div class="max-w-6xl mx-auto px-3 sm:px-6 py-2 grid grid-cols-4 gap-2">
-        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200" data-page-target="dashboard" aria-pressed="false">
-          Dashboard
+        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200 inline-flex items-center justify-center gap-1.5" data-page-target="dashboard" aria-pressed="false">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M3 10.5 12 3l9 7.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5.25 9.75V20.25H18.75V9.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Dashboard</span>
         </button>
-        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200" data-page-target="goals" aria-pressed="false">
-          Goals
+        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200 inline-flex items-center justify-center gap-1.5" data-page-target="goals" aria-pressed="false">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M12 21a8.7 8.7 0 0 1-6.16-2.55A8.7 8.7 0 0 1 3.3 12.3 8.7 8.7 0 0 1 5.85 6.14 8.7 8.7 0 0 1 12 3.6a8.7 8.7 0 0 1 6.16 2.54A8.7 8.7 0 0 1 20.7 12.3a8.7 8.7 0 0 1-2.54 6.15A8.7 8.7 0 0 1 12 21Z" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9.1 12.4 11.1 14.4 15.2 10.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Goals</span>
         </button>
-        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200" data-page-target="consistency" aria-pressed="false">
-          Consistency
+        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200 inline-flex items-center justify-center gap-1.5" data-page-target="consistency" aria-pressed="false">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M4 16.5 9 11.5 12.5 15 20 7.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 7.5H20V11.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Consistency</span>
         </button>
-        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200" data-page-target="reflection" aria-pressed="false">
-          Reflection
+        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200 inline-flex items-center justify-center gap-1.5" data-page-target="reflection" aria-pressed="false">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M6 4.75h8a3 3 0 0 1 3 3v11.5H9a3 3 0 0 1-3-3V4.75Z" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 8.5h6M9 12h6M9 15.5h4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Reflection</span>
         </button>
       </div>
     </nav>

@@ -5,6 +5,9 @@ const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
   day: 'numeric',
   year: 'numeric'
 });
+const WEEKDAY_FORMATTER = new Intl.DateTimeFormat(undefined, { weekday: 'long' });
+const WEEKDAY_SHORT_FORMATTER = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
+const MONTH_FORMATTER = new Intl.DateTimeFormat(undefined, { month: 'long' });
 
 const MESSAGES = [
   'Small honest actions beat perfect plans.',
@@ -50,7 +53,21 @@ const GOAL_IDEAS = {
     'Sleep plan: in bed before 11:00 PM',
     'Stretch for {minutes} minutes',
     'Drink water before coffee',
-    'No phone during first {minutes} minutes after waking'
+    'No phone first {minutes} minutes after waking',
+    'No screens 30 minutes before bed',
+    'Stand up and move for 3 minutes every hour',
+    'Try one new healthy recipe this week',
+    'Take a short walk after each meal',
+    'Do one thing to improve sleep environment',
+    'Limit caffeine to before 2:00 PM',
+    'Have a technology sunset starting at 8:00 PM',
+    'Go to bed with a clear mind',
+    'Have a device-free morning routine',
+    'Get outdoors during daylight hours',
+    'Get at least 7 hours of sleep on at least 5 nights this week',
+    'Do not smoke or vape today',
+    'Do not drink alcohol today',
+    'Eat a healthy breakfast within 2 hours of waking'
   ],
   mind: [
     'Meditate for {minutes} minutes',
@@ -66,15 +83,34 @@ const GOAL_IDEAS = {
     'Review notes for {minutes} minutes',
     'Watch one lesson and summarize it',
     'Learn 10 new words',
-    'Build one tiny project step'
+    'Build one tiny project step',
+    'Read one article in my field',
+    'Listen to one educational podcast episode',
+    'Write one reflection on what I learned recently',
+    'Teach one concept I recently learned to someone else',
+    'Do one practice problem in a subject I want to improve',
+    'Review one mistake and identify a next step to improve',
+    'Spend {minutes} minutes on deliberate practice',
+    'Read one chapter of a non-fiction book'
   ],
   relationships: [
+    'Have at least one social interaction today',
     'Send one thoughtful message',
     'Call family for {minutes} minutes',
     'Have one device-free meal with someone',
     'Give one sincere compliment',
     'Ask one better question today',
-    'Check in with one friend'
+    'Check in with one friend',
+    'Have a 10-minute phone or video call with a friend or family member',
+    'Do one kind thing for someone else',
+    'Express appreciation to someone who helped you recently',
+    'Have a 15-minute in-person conversation with someone',
+    'Spend quality time with a pet',
+    'Write a handwritten note to someone',
+    'Reconnect with someone you haven\'t talked to in a while',
+    'Have a meaningful conversation with a colleague',
+    'Do one activity with a friend or family member',
+    'Share one positive thing about your day with someone else'
   ],
   organization: [
     'Tidy one area for {minutes} minutes',
@@ -82,7 +118,17 @@ const GOAL_IDEAS = {
     'Inbox zero sprint for {minutes} minutes',
     'Review budget for {minutes} minutes',
     'Prep tomorrow clothes and workspace',
-    'Delete 20 unnecessary files/emails'
+    'Delete 20 unnecessary files/emails',
+    'Organize one area for {minutes} minutes',
+    'Do a {minutes}-minute digital declutter',
+    'Make a meal plan for the week',
+    'Do a {minutes}-minute tidy-up before bed',
+    'Write a to-do list for tomorrow',
+    'Set calendar reminders for important tasks/events',
+    'Review and update one recurring task or subscription',
+    'Spend {minutes} minutes on a project I\'ve been procrastinating',
+    'Clean up one area of your home',
+    'Organize one area of your home'
   ]
 };
 
@@ -93,11 +139,14 @@ const EFFORT_MINUTES = {
 };
 
 const PAGE_IDS = ['dashboard', 'goals', 'consistency', 'reflection'];
+const THEME_IDS = ['light', 'dark'];
 
 const state = loadState();
 
 const el = {
-  greeting: document.getElementById('greeting'),
+  themeToggleBtn: document.getElementById('theme-toggle-btn'),
+  themeToggleIcon: document.getElementById('theme-toggle-icon'),
+  themeToggleLabel: document.getElementById('theme-toggle-label'),
   todayDate: document.getElementById('today-date'),
   motivation: document.getElementById('motivation'),
   statsGrid: document.getElementById('stats-grid'),
@@ -120,6 +169,16 @@ const el = {
   promptResponseStatus: document.getElementById('prompt-response-status'),
   promptResponseHistory: document.getElementById('prompt-response-history'),
   nextPromptBtn: document.getElementById('next-prompt-btn'),
+  dashboardFocusBadge: document.getElementById('dashboard-focus-badge'),
+  dashboardFocusSummary: document.getElementById('dashboard-focus-summary'),
+  dashboardWeekTrend: document.getElementById('dashboard-week-trend'),
+  dashboardStreakSpotlight: document.getElementById('dashboard-streak-spotlight'),
+  dashboardInProgressCount: document.getElementById('dashboard-in-progress-count'),
+  dashboardInProgressList: document.getElementById('dashboard-in-progress-list'),
+  dashboardPromptPreview: document.getElementById('dashboard-prompt-preview'),
+  dashboardReflectionPulse: document.getElementById('dashboard-reflection-pulse'),
+  featureGrid: document.getElementById('feature-grid'),
+  featureAside: document.getElementById('feature-aside'),
   pageTabs: Array.from(document.querySelectorAll('.page-tab')),
   pageSections: Array.from(document.querySelectorAll('[data-pages]')),
   confettiLayer: document.getElementById('confetti-layer'),
@@ -136,11 +195,10 @@ const expandedGoalIds = new Set();
 init();
 
 function init() {
-  paintHeader();
+  applyTheme(state.theme || 'light');
   bindEvents();
   renderAll();
   rotateMotivation(true);
-  startPromptRotation();
 }
 
 function loadState() {
@@ -153,6 +211,7 @@ function loadState() {
       promptResponses: [],
       promptDraft: '',
       selectedPage: 'dashboard',
+      theme: 'light',
       selectedReflectionDate: todayKey(),
       lastCelebrationDate: null
     };
@@ -167,6 +226,7 @@ function loadState() {
       promptResponses: normalizePromptResponses(parsed.promptResponses),
       promptDraft: typeof parsed.promptDraft === 'string' ? parsed.promptDraft : '',
       selectedPage: normalizePage(parsed.selectedPage),
+      theme: normalizeTheme(parsed.theme),
       selectedReflectionDate: normalizeDateKey(parsed.selectedReflectionDate) || todayKey(),
       lastCelebrationDate: typeof parsed.lastCelebrationDate === 'string' ? parsed.lastCelebrationDate : null
     };
@@ -178,6 +238,7 @@ function loadState() {
       promptResponses: [],
       promptDraft: '',
       selectedPage: 'dashboard',
+      theme: 'light',
       selectedReflectionDate: todayKey(),
       lastCelebrationDate: null
     };
@@ -188,8 +249,15 @@ function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+function dateKeyFromLocalDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+  return dateKeyFromLocalDate(new Date());
 }
 
 function formatDisplayDate(dateKey) {
@@ -197,14 +265,41 @@ function formatDisplayDate(dateKey) {
   return DATE_FORMATTER.format(d);
 }
 
-function paintHeader() {
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-  el.greeting.textContent = `${greeting} - show up gently, show up fully.`;
-  el.todayDate.textContent = formatDisplayDate(todayKey());
+function ordinalSuffix(day) {
+  const mod100 = day % 100;
+  if (mod100 >= 11 && mod100 <= 13) {
+    return 'th';
+  }
+
+  const mod10 = day % 10;
+  if (mod10 === 1) {
+    return 'st';
+  }
+  if (mod10 === 2) {
+    return 'nd';
+  }
+  if (mod10 === 3) {
+    return 'rd';
+  }
+  return 'th';
+}
+
+function formatLongDateWithOrdinal(dateKey) {
+  const d = new Date(`${dateKey}T12:00:00`);
+  const weekday = WEEKDAY_FORMATTER.format(d);
+  const month = MONTH_FORMATTER.format(d);
+  const day = d.getDate();
+  const year = d.getFullYear();
+  return `${weekday}, ${month} ${day}${ordinalSuffix(day)}, ${year}`;
 }
 
 function bindEvents() {
+  el.themeToggleBtn.addEventListener('click', () => {
+    const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+    saveState();
+  });
+
   el.addGoalBtn.addEventListener('click', addGoalFromInput);
   el.goalTitle.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
@@ -271,9 +366,25 @@ function bindEvents() {
     });
   });
 
+  document.addEventListener('click', (event) => {
+    const jumpBtn = event.target.closest('[data-page-jump]');
+    if (jumpBtn) {
+      setActivePage(jumpBtn.dataset.pageJump, true);
+      return;
+    }
+
+    const markBtn = event.target.closest('[data-dashboard-mark-id]');
+    if (!markBtn) {
+      return;
+    }
+
+    markGoal(markBtn.dataset.dashboardMarkId, markBtn.dataset.status);
+  });
+
   el.refreshIdeasBtn.addEventListener('click', renderGoalIdeas);
   el.ideaFocus.addEventListener('change', renderGoalIdeas);
   el.ideaEffort.addEventListener('change', renderGoalIdeas);
+  window.addEventListener('resize', updateIdeaChipOverflowState);
   el.ideaResults.addEventListener('click', (event) => {
     const btn = event.target.closest('[data-idea-title]');
     if (!btn) {
@@ -354,6 +465,7 @@ function renderAll() {
   hydrateReflection();
   renderReflectionHistory();
   renderPrompt();
+  renderDashboard();
   hydratePromptResponseInput();
   renderPromptResponseHistory();
   renderGoalIdeas();
@@ -362,6 +474,102 @@ function renderAll() {
   renderHeatmap();
   setActivePage(state.selectedPage || 'dashboard', false);
   maybeCelebrate();
+}
+
+function renderDashboard() {
+  const today = todayKey();
+  const activeGoals = state.goals.length;
+  const doneToday = state.goals.filter((goal) => goal.completionHistory[today]?.status === 'done').length;
+  const pendingGoals = state.goals.filter((goal) => !goal.completionHistory[today]?.status);
+
+  if (activeGoals === 0) {
+    el.dashboardFocusBadge.textContent = 'Start here';
+    el.dashboardFocusSummary.textContent = 'Add your first goal to unlock daily focus, streak insights, and weekly trends.';
+  } else if (pendingGoals.length === 0) {
+    el.dashboardFocusBadge.textContent = 'Complete';
+    el.dashboardFocusSummary.textContent = `All ${activeGoals} goals are marked today. Nice follow-through.`;
+  } else {
+    el.dashboardFocusBadge.textContent = `${pendingGoals.length} left`;
+    el.dashboardFocusSummary.textContent = `${doneToday}/${activeGoals} marked today. Next up: ${pendingGoals[0].title}.`;
+  }
+
+  const weekPoints = aggregateDailyOutcomes(7).reverse();
+  el.dashboardWeekTrend.innerHTML = `
+    <p class="text-xs uppercase tracking-wide text-zinc-500 mb-2">This Week's Trend</p>
+    <div class="grid grid-cols-7 gap-2">
+      ${weekPoints
+        .map((point) => {
+          const dayLabel = WEEKDAY_SHORT_FORMATTER.format(new Date(`${point.date}T12:00:00`));
+          const colorClass =
+            point.type === 'done'
+              ? 'bg-teal-500'
+              : point.type === 'partial'
+                ? 'bg-amber-500'
+                : point.type === 'missed'
+                  ? 'bg-red-500'
+                  : 'bg-zinc-300';
+
+          return `
+            <div class="text-center">
+              <div class="mx-auto w-full max-w-10 h-2 rounded-full ${colorClass}" title="${formatLongDateWithOrdinal(point.date)}: ${point.label}"></div>
+              <p class="mt-1 text-[11px] text-zinc-500">${dayLabel}</p>
+            </div>
+          `;
+        })
+        .join('')}
+    </div>
+  `;
+
+  const bestGoal =
+    state.goals
+      .map((goal) => ({ goal, stats: computeGoalStats(goal) }))
+      .sort((a, b) => b.stats.currentStreak - a.stats.currentStreak)[0] || null;
+  const atRiskGoal = pendingGoals[0] || null;
+
+  el.dashboardStreakSpotlight.innerHTML = `
+    <p><span class="text-zinc-500">Best active streak:</span> ${bestGoal ? `${escapeHtml(bestGoal.goal.title)} (${bestGoal.stats.currentStreak} days)` : 'No streak yet'}</p>
+    <p class="mt-2"><span class="text-zinc-500">At risk today:</span> ${atRiskGoal ? escapeHtml(atRiskGoal.title) : 'None'}</p>
+  `;
+
+  el.dashboardInProgressCount.textContent = pendingGoals.length ? `${pendingGoals.length} unmarked` : 'All marked';
+  if (pendingGoals.length === 0) {
+    el.dashboardInProgressList.innerHTML = '<p class="text-sm text-zinc-500">Everything is marked for today. Keep the momentum.</p>';
+  } else {
+    el.dashboardInProgressList.innerHTML = pendingGoals
+      .map(
+        (goal) => `
+          <div class="rounded-xl border border-zinc-200 bg-white p-3">
+            <p class="text-sm font-semibold text-zinc-800">${escapeHtml(goal.title)}</p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <button class="focus-ring text-xs rounded-lg px-3 py-1.5 bg-teal-600 text-white hover:bg-teal-500 transition-colors" data-dashboard-mark-id="${goal.id}" data-status="done">Done</button>
+              <button class="focus-ring text-xs rounded-lg px-3 py-1.5 bg-zinc-100 text-zinc-700 hover:bg-red-100 transition-colors" data-dashboard-mark-id="${goal.id}" data-status="missed">Missed</button>
+            </div>
+          </div>
+        `
+      )
+      .join('');
+  }
+
+  el.dashboardPromptPreview.textContent = getCurrentPrompt();
+
+  const reflectionToday = (state.reflections[today] || '').trim().length > 0;
+  const reflectionStreak = computeReflectionStreak(today);
+  el.dashboardReflectionPulse.innerHTML = `
+    <p><span class="text-zinc-500">Today:</span> ${reflectionToday ? 'Written' : 'Not written yet'}</p>
+    <p class="mt-2"><span class="text-zinc-500">Current reflection streak:</span> ${reflectionStreak} day${reflectionStreak === 1 ? '' : 's'}</p>
+  `;
+}
+
+function computeReflectionStreak(startDateKey) {
+  let streak = 0;
+  let cursor = startDateKey;
+
+  while ((state.reflections[cursor] || '').trim().length > 0) {
+    streak += 1;
+    cursor = previousDate(cursor);
+  }
+
+  return streak;
 }
 
 function setActivePage(page, shouldScroll) {
@@ -388,6 +596,8 @@ function setActivePage(page, shouldScroll) {
     tab.classList.toggle('border-zinc-200', !isActive);
   }
 
+  updateDesktopFeatureLayout(nextPage);
+
   saveState();
 
   if (shouldScroll) {
@@ -395,15 +605,41 @@ function setActivePage(page, shouldScroll) {
   }
 }
 
+function updateDesktopFeatureLayout(page) {
+  if (!el.featureAside) {
+    return;
+  }
+
+  const isReflection = page === 'reflection';
+  el.featureAside.classList.toggle('lg:col-span-3', isReflection);
+}
+
 function normalizePage(value) {
   const page = typeof value === 'string' ? value : '';
   return PAGE_IDS.includes(page) ? page : 'dashboard';
+}
+
+function normalizeTheme(value) {
+  const theme = typeof value === 'string' ? value : '';
+  return THEME_IDS.includes(theme) ? theme : 'light';
+}
+
+function applyTheme(theme) {
+  const nextTheme = normalizeTheme(theme);
+  state.theme = nextTheme;
+  document.body.classList.toggle('theme-dark', nextTheme === 'dark');
+
+  const isDark = nextTheme === 'dark';
+  el.themeToggleBtn.setAttribute('aria-pressed', String(isDark));
+  el.themeToggleIcon.textContent = isDark ? '☀️' : '🌙';
+  el.themeToggleLabel.textContent = isDark ? 'Light mode' : 'Dark mode';
 }
 
 function renderGoalIdeas() {
   const focus = el.ideaFocus.value;
   const effort = el.ideaEffort.value;
   const minutes = EFFORT_MINUTES[effort] || 20;
+  const existingTitles = new Set(state.goals.map((g) => g.title.trim().toLowerCase()));
 
   const basePool =
     focus === 'all'
@@ -413,20 +649,55 @@ function renderGoalIdeas() {
   const shuffled = [...basePool]
     .map((idea) => ({ idea, sort: Math.random() }))
     .sort((a, b) => a.sort - b.sort)
-    .slice(0, 6)
-    .map((entry) => entry.idea.replaceAll('{minutes}', String(minutes)));
+    .map((entry) => entry.idea.replaceAll('{minutes}', String(minutes)))
+    .filter((idea, idx, arr) => arr.indexOf(idea) === idx)
+    .filter((idea) => !existingTitles.has(idea.trim().toLowerCase()))
+    .slice(0, 6);
 
-  el.ideaResults.innerHTML = shuffled
-    .map(
-      (idea) =>
-        `<button class="focus-ring rounded-full px-3 py-2 text-sm bg-white border border-zinc-300 hover:border-teal-400 hover:bg-teal-50 text-zinc-700 transition-colors" data-idea-title="${escapeHtml(idea)}">+ ${escapeHtml(idea)}</button>`
-    )
-    .join('');
+  if (shuffled.length === 0) {
+    el.ideaResults.innerHTML = '<p class="text-sm text-zinc-500">All current suggestions are already in your goals. Try another focus or effort level.</p>';
+  } else {
+    el.ideaResults.innerHTML = shuffled
+      .map((idea) => {
+        const escaped = escapeHtml(idea);
+
+        return `<button class="idea-chip focus-ring rounded-full px-3 py-2 text-sm bg-white border border-zinc-300 hover:border-teal-400 hover:bg-teal-50 text-zinc-700 transition-colors" data-idea-title="${escaped}" title="${escaped}"><span class="idea-chip__prefix" aria-hidden="true">+</span><span class="idea-chip__viewport"><span class="idea-chip__text">${escaped}</span></span></button>`;
+      })
+      .join('');
+
+    // Measure actual overflow after render so marquee only runs when text exceeds chip width.
+    requestAnimationFrame(updateIdeaChipOverflowState);
+  }
 
   if (state.goals.length === 0) {
     el.ideaHelperNote.textContent = 'No goals yet. Tap one suggestion to begin.';
   } else {
     el.ideaHelperNote.textContent = 'Suggestions stay available any time you want to add a new commitment.';
+  }
+}
+
+function updateIdeaChipOverflowState() {
+  const chips = el.ideaResults.querySelectorAll('.idea-chip');
+
+  for (const chip of chips) {
+    const viewport = chip.querySelector('.idea-chip__viewport');
+    const text = chip.querySelector('.idea-chip__text');
+    if (!viewport || !text) {
+      continue;
+    }
+
+    const overflow = Math.max(0, Math.ceil(text.scrollWidth - viewport.clientWidth));
+    if (overflow > 2) {
+      const duration = Math.min(5.2, Math.max(1.8, 1.2 + overflow / 110));
+      chip.classList.add('is-scrollable');
+      chip.style.setProperty('--scroll-distance', `${overflow}px`);
+      chip.style.setProperty('--scroll-duration', `${duration.toFixed(1)}s`);
+    } else {
+      chip.classList.remove('is-scrollable');
+      chip.style.setProperty('--scroll-distance', '0px');
+      chip.style.setProperty('--scroll-duration', '6s');
+      text.style.transform = 'translateX(0)';
+    }
   }
 }
 
@@ -504,7 +775,7 @@ function shiftDateKey(dateKey, deltaDays) {
   const normalized = normalizeDateKey(dateKey) || todayKey();
   const d = new Date(`${normalized}T12:00:00`);
   d.setDate(d.getDate() + deltaDays);
-  return d.toISOString().slice(0, 10);
+  return dateKeyFromLocalDate(d);
 }
 
 function normalizeDateKey(value) {
@@ -680,7 +951,7 @@ function computeGoalStats(goal) {
 function previousDate(dateKey) {
   const d = new Date(`${dateKey}T12:00:00`);
   d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
+  return dateKeyFromLocalDate(d);
 }
 
 function markGoal(goalId, status) {
@@ -840,6 +1111,12 @@ function renderGoals() {
       goal.streakCount = stats.currentStreak;
       goal.longestStreak = stats.longestStreak;
       const status = goal.completionHistory[key]?.status;
+      const statusMeta =
+        status === 'done'
+          ? { label: 'Done', classes: 'bg-teal-100 text-teal-800 border-teal-200' }
+          : status === 'missed'
+            ? { label: 'Missed', classes: 'bg-red-100 text-red-700 border-red-200' }
+            : { label: 'No update', classes: 'bg-zinc-100 text-zinc-600 border-zinc-200' };
       const note = goal.completionHistory[key]?.note || '';
       const miniHistory = recentHistory(goal, 14);
 
@@ -852,10 +1129,12 @@ function renderGoals() {
                 <p class="text-xs text-zinc-500 mt-1">Created ${formatDisplayDate(goal.createdDate)}</p>
               </div>
               <div class="text-right shrink-0">
-                <p class="text-xs uppercase tracking-wide text-zinc-500">${stats.completionPct}% complete</p>
-                <p class="mt-1 text-sm font-semibold text-teal-700">Streak ${goal.streakCount}</p>
-                <p class="mt-1 text-xs text-zinc-500">${isExpanded ? 'Tap to collapse' : 'Tap to expand'}</p>
+                <p class="text-xs uppercase tracking-wide text-zinc-500">${stats.completionPct}% done</p>
+                <p class="mt-1 text-sm font-semibold text-teal-700">Streak: ${goal.streakCount} day${goal.streakCount === 1 ? '' : 's'} in a row</p>
               </div>
+            </div>
+            <div class="mt-2">
+              <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${statusMeta.classes}">${statusMeta.label}</span>
             </div>
           </button>
 
@@ -892,7 +1171,7 @@ function renderGoals() {
                 Done ✅
               </button>
               <button class="focus-ring mark-btn rounded-lg px-4 py-2 text-sm font-semibold transition-all ${status === 'missed' ? 'bg-red-500 text-white' : 'bg-zinc-100 hover:bg-red-100 text-zinc-700'}" data-goal-id="${goal.id}" data-status="missed">
-                Missed ❌
+                Missed ✕
               </button>
             </div>
 
@@ -987,7 +1266,7 @@ function recentHistory(goal, days) {
   for (let i = days - 1; i >= 0; i -= 1) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = dateKeyFromLocalDate(d);
     list.push({
       date: key,
       status: goal.completionHistory[key]?.status || null
@@ -1005,12 +1284,16 @@ function renderHeatmap() {
       const colorClass =
         point.type === 'done'
           ? 'bg-teal-500'
+          : point.type === 'partial'
+            ? 'bg-amber-500'
           : point.type === 'missed'
             ? 'bg-red-500'
             : 'bg-zinc-300';
+      const textColorClass = point.type === 'none' ? 'text-zinc-900' : 'text-white';
       const todayRing = point.date === today ? 'ring-1 ring-teal-300' : '';
+      const longDate = formatLongDateWithOrdinal(point.date);
 
-      return `<button class="heat-cell w-2.5 h-2.5 sm:w-4 sm:h-4 ${colorClass} ${todayRing} focus-ring" title="${point.date}: ${point.label}" aria-label="${point.date} ${point.label}"></button>`;
+      return `<button class="heat-cell w-4 h-4 sm:w-6 sm:h-6 ${colorClass} ${textColorClass} ${todayRing} focus-ring inline-flex items-center justify-center text-[9px] sm:text-[10px] font-semibold" title="${longDate}: ${point.label}" aria-label="${longDate} ${point.label}">${point.dayNumber}</button>`;
     })
     .join('');
 }
@@ -1019,10 +1302,11 @@ function aggregateDailyOutcomes(days) {
   const today = new Date(`${todayKey()}T12:00:00`);
   const points = [];
 
-  for (let i = days - 1; i >= 0; i -= 1) {
+  for (let i = 0; i < days; i += 1) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = dateKeyFromLocalDate(d);
+    const dayNumber = d.getDate();
 
     let done = 0;
     let missed = 0;
@@ -1038,7 +1322,10 @@ function aggregateDailyOutcomes(days) {
 
     let type = 'none';
     let label = 'No data';
-    if (done > 0 && done >= missed) {
+    if (done > 0 && missed > 0) {
+      type = 'partial';
+      label = `Partial (${done} done, ${missed} missed)`;
+    } else if (done > 0) {
       type = 'done';
       label = `Done (${done})`;
     } else if (missed > 0) {
@@ -1046,7 +1333,7 @@ function aggregateDailyOutcomes(days) {
       label = `Missed (${missed})`;
     }
 
-    points.push({ date: key, type, label });
+    points.push({ date: key, dayNumber, type, label });
   }
 
   return points;
