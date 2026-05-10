@@ -21,7 +21,7 @@ const EFFORT_MINUTES = {
   deep: 40
 };
 
-const PAGE_IDS = ['dashboard', 'goals', 'consistency', 'reflection'];
+const PAGE_IDS = ['dashboard', 'goals', 'consistency', 'reflection', 'about'];
 const THEME_IDS = ['light', 'dark'];
 
 const state = loadState();
@@ -95,10 +95,30 @@ const expandedGoalIds = new Set();
 init();
 
 function init() {
+  requestPersistentStorage();
   applyTheme(state.theme || 'dark');
   bindEvents();
   renderAll();
   rotateMotivation(true);
+}
+
+async function requestPersistentStorage() {
+  if (!('storage' in navigator) || typeof navigator.storage.persist !== 'function') {
+    return;
+  }
+
+  try {
+    const alreadyPersistent =
+      typeof navigator.storage.persisted === 'function' ? await navigator.storage.persisted() : false;
+
+    if (alreadyPersistent) {
+      return;
+    }
+
+    await navigator.storage.persist();
+  } catch {
+    // Ignore failures; persistence support depends on browser policy and user settings.
+  }
 }
 
 function loadState() {
@@ -427,7 +447,12 @@ function renderDashboard() {
       el.dashboardFocusBadge.classList.add('text-teal-700', 'border-teal-300');
     }
   } else {
-    el.dashboardFocusBadge.classList.add('bg-tide-50', 'text-tide-700', 'border-tide-200');
+    el.dashboardFocusBadge.classList.add('bg-transparent');
+    if (isDark) {
+      el.dashboardFocusBadge.classList.add('text-teal-300', 'border-teal-300');
+    } else {
+      el.dashboardFocusBadge.classList.add('text-tide-700', 'border-tide-200');
+    }
   }
 
   if (activeGoals === 0) {
@@ -1000,6 +1025,40 @@ function deleteGoal(goalId) {
   renderAll();
 }
 
+function renameGoal(goalId) {
+  const goal = state.goals.find((g) => g.id === goalId);
+  if (!goal) {
+    return;
+  }
+
+  const nextTitle = prompt('Edit goal title:', goal.title);
+  if (nextTitle == null) {
+    return;
+  }
+
+  const cleanTitle = String(nextTitle).trim();
+  if (!cleanTitle) {
+    el.goalFeedback.textContent = 'Goal title cannot be empty.';
+    return;
+  }
+
+  if (cleanTitle.toLowerCase() === goal.title.toLowerCase()) {
+    el.goalFeedback.textContent = 'Goal title unchanged.';
+    return;
+  }
+
+  const duplicate = state.goals.some((g) => g.id !== goalId && g.title.toLowerCase() === cleanTitle.toLowerCase());
+  if (duplicate) {
+    el.goalFeedback.textContent = 'Another goal already has that title.';
+    return;
+  }
+
+  goal.title = cleanTitle;
+  el.goalFeedback.textContent = 'Goal title updated.';
+  saveState();
+  renderAll();
+}
+
 function renderStats() {
   const key = todayKey();
   const activeGoals = state.goals.length;
@@ -1141,9 +1200,20 @@ function renderGoals() {
           </button>
 
           <div id="goal-panel-${goal.id}" class="${isExpanded ? 'mt-4' : 'hidden'}">
-            <div class="flex justify-end">
-              <button class="focus-ring delete-goal text-zinc-500 hover:text-red-600 transition-colors px-2 py-1" data-goal-id="${goal.id}" aria-label="Delete goal ${escapeHtml(goal.title)}">
-                Delete
+            <div class="flex justify-end gap-1">
+              <button class="focus-ring rename-goal inline-flex items-center gap-1.5 text-zinc-500 hover:text-tide-700 transition-colors px-2 py-1" data-goal-id="${goal.id}" aria-label="Rename goal ${escapeHtml(goal.title)}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M4 20h4l9.7-9.7a1.8 1.8 0 0 0 0-2.6l-1.4-1.4a1.8 1.8 0 0 0-2.6 0L4 16v4Z" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Rename</span>
+              </button>
+              <button class="focus-ring delete-goal inline-flex items-center gap-1.5 text-zinc-500 hover:text-red-600 transition-colors px-2 py-1" data-goal-id="${goal.id}" aria-label="Delete goal ${escapeHtml(goal.title)}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M4.5 7.5h15" stroke-linecap="round"/>
+                  <path d="M9.5 7.5v-1a1.5 1.5 0 0 1 1.5-1.5h2a1.5 1.5 0 0 1 1.5 1.5v1" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M7 7.5l.8 11a2 2 0 0 0 2 1.9h4.4a2 2 0 0 0 2-1.9l.8-11" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Delete</span>
               </button>
             </div>
 
@@ -1251,6 +1321,12 @@ function wireGoalActions() {
   document.querySelectorAll('.delete-goal').forEach((btn) => {
     btn.addEventListener('click', () => {
       deleteGoal(btn.dataset.goalId);
+    });
+  });
+
+  document.querySelectorAll('.rename-goal').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      renameGoal(btn.dataset.goalId);
     });
   });
 
@@ -1727,6 +1803,8 @@ function renderConsistencyMilestones() {
     return;
   }
 
+  const isDark = state.theme === 'dark';
+
   const week = collectDailyMetrics(7);
   const weekDone = week.reduce((sum, day) => sum + day.done, 0);
   const weekMissed = week.reduce((sum, day) => sum + day.missed, 0);
@@ -1742,14 +1820,25 @@ function renderConsistencyMilestones() {
   ];
 
   el.consistencyMilestones.innerHTML = milestones
-    .map(
-      (milestone) => `
-        <div class="rounded-lg border ${milestone.achieved ? 'border-teal-300 bg-teal-50' : 'border-zinc-200'} px-3 py-2">
-          <p class="text-sm font-medium ${milestone.achieved ? 'text-teal-800' : 'text-zinc-700'}">${milestone.achieved ? 'Completed' : 'In progress'}: ${escapeHtml(milestone.label)}</p>
+    .map((milestone) => {
+      const containerClasses = milestone.achieved
+        ? isDark
+          ? 'border-teal-300/60 bg-transparent'
+          : 'border-teal-300 bg-teal-50'
+        : 'border-zinc-200';
+      const titleClasses = milestone.achieved
+        ? isDark
+          ? 'text-teal-200'
+          : 'text-teal-800'
+        : 'text-zinc-700';
+
+      return `
+        <div class="rounded-lg border ${containerClasses} px-3 py-2">
+          <p class="text-sm font-medium ${titleClasses}">${milestone.achieved ? 'Completed' : 'In progress'}: ${escapeHtml(milestone.label)}</p>
           <p class="text-xs text-zinc-500 mt-1">${escapeHtml(milestone.meta)}</p>
         </div>
-      `
-    )
+      `;
+    })
     .join('');
 }
 

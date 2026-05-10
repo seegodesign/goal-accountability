@@ -163,17 +163,18 @@ const GOAL_IDEAS = {
     'Check in with one friend',
     'Have a 10-minute phone or video call with a friend or family member',
     'Do one kind thing for someone else',
-    'Express appreciation to someone who helped you recently',
+    'Express appreciation to someone who helped me recently',
     'Have a 15-minute in-person conversation with someone',
     'Spend quality time with a pet',
     'Write a handwritten note to someone',
-    'Reconnect with someone you haven\'t talked to in a while',
+    'Reconnect with someone I haven\'t talked to in a while',
     'Have a meaningful conversation with a colleague',
     'Do one activity with a friend or family member',
-    'Share one positive thing about your day with someone else',
+    'Share one positive thing about my day with someone else',
     'Ask someone about their day and listen attentively',
     'Do one thing to nurture an important relationship',
-    'Spend {minutes} minutes on a video call with a friend or family member'
+    'Spend {minutes} minutes on a video call with a friend or family member',
+    'Tell someone I care about them and why'
   ],
   organization: [
     'Tidy one area for {minutes} minutes',
@@ -190,11 +191,11 @@ const GOAL_IDEAS = {
     'Set calendar reminders for important tasks/events',
     'Review and update one recurring task or subscription',
     'Spend {minutes} minutes on a project I\'ve been procrastinating',
-    'Clean up one area of your home',
-    'Organize one area of your home',
-    'Do a {minutes}-minute tidy-up of your digital files',
-    'Review and update your budget or finances',
-    'Plan your schedule for the next day',
+    'Clean up one area of my home',
+    'Organize one area of my home',
+    'Do a {minutes}-minute tidy-up of my digital files',
+    'Review and update my budget or finances',
+    'Plan my schedule for the next day',
     'Set up a new system to stay organized'
   ]
 };
