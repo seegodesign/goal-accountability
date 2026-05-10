@@ -630,6 +630,11 @@ function applyTheme(theme) {
   document.body.classList.toggle('theme-dark', nextTheme === 'dark');
 
   const isDark = nextTheme === 'dark';
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeColorMeta) {
+    themeColorMeta.setAttribute('content', isDark ? '#0a0f13' : '#ffffff');
+  }
+
   el.themeToggleBtn.setAttribute('aria-pressed', String(isDark));
   el.themeToggleIcon.textContent = isDark ? '☀️' : '🌙';
   el.themeToggleLabel.textContent = isDark ? 'Light mode' : 'Dark mode';
