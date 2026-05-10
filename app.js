@@ -1121,8 +1121,8 @@ function renderGoals() {
       const miniHistory = recentHistory(goal, 14);
 
       return `
-        <section class="rounded-2xl bg-white border border-zinc-200 p-4 sm:p-5 card-enter shadow-sm" style="animation-delay:${idx * 40}ms">
-          <button class="focus-ring toggle-goal w-full rounded-xl p-2 -m-2 text-left hover:bg-zinc-50 transition-colors" data-goal-id="${goal.id}" aria-expanded="${isExpanded}" aria-controls="goal-panel-${goal.id}">
+        <section class="rounded-2xl bg-white border border-zinc-200 p-2 sm:p-4 card-enter shadow-sm" style="animation-delay:${idx * 40}ms">
+          <button class="focus-ring toggle-goal w-full rounded-xl p-2 sm:p-4 text-left hover:bg-zinc-50 transition-colors" data-goal-id="${goal.id}" aria-expanded="${isExpanded}" aria-controls="goal-panel-${goal.id}">
             <div class="flex gap-3 items-start justify-between">
               <div>
                 <h3 class="text-xl sm:text-2xl font-semibold text-zinc-900">${escapeHtml(goal.title)}</h3>
