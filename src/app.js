@@ -8,129 +8,11 @@ const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
 const WEEKDAY_FORMATTER = new Intl.DateTimeFormat(undefined, { weekday: 'long' });
 const WEEKDAY_SHORT_FORMATTER = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
 const MONTH_FORMATTER = new Intl.DateTimeFormat(undefined, { month: 'long' });
-
-const MESSAGES = [
-  'Small honest actions beat perfect plans.',
-  'You are building proof, not just intention.',
-  'Consistency grows quietly before it feels loud.',
-  'Keep the promise in front of you, not all promises forever.',
-  'One deliberate check-in can reset an entire week.',
-  'Progress is often private first, obvious later.',
-  'Today is enough to practice who you want to be.',
-  'Momentum starts with a single marked square.'
-];
-
-const DAILY_PROMPTS = [
-  'What commitment mattered most today?',
-  'What almost pulled you off track, and what kept you grounded?',
-  'What made today easier than yesterday?',
-  'Where did you choose honesty over comfort?',
-  'What is one tiny action tomorrow-you will be grateful for?',
-  'What did you learn about your resistance today?',
-  'If today had a theme, what was it?',
-  'What standard are you quietly raising?',
-  'What did you postpone today, and why?',
-  'Where did you follow through even when motivation was low?',
-  'What boundary protected your focus today?',
-  'What was one moment you felt fully present?',
-  'What did you avoid that deserves a 10-minute start tomorrow?',
-  'Which choice today matched your long-term self best?',
-  'What friction point should you redesign for tomorrow?',
-  'What helped your energy most today?',
-  'What would make tomorrow 5% better?',
-  'What did you learn from a miss or mistake today?',
-  'What is one promise you will keep before noon tomorrow?',
-  'What are you proud of that no one else saw?',
-  'What task is still mentally open, and what is the next step?',
-  'If you repeated today for a month, where would you end up?',
-  'What can you simplify tomorrow to reduce resistance?'
-];
-
-const GOAL_IDEAS = {
-  energy: [
-    'Walk {minutes} minutes outside',
-    'Do a {minutes}-minute bodyweight workout',
-    'Sleep plan: in bed before 11:00 PM',
-    'Stretch for {minutes} minutes',
-    'Drink water before coffee',
-    'No phone first {minutes} minutes after waking',
-    'No screens 30 minutes before bed',
-    'Stand up and move for 3 minutes every hour',
-    'Try one new healthy recipe this week',
-    'Take a short walk after each meal',
-    'Do one thing to improve sleep environment',
-    'Limit caffeine to before 2:00 PM',
-    'Have a technology sunset starting at 8:00 PM',
-    'Go to bed with a clear mind',
-    'Have a device-free morning routine',
-    'Get outdoors during daylight hours',
-    'Get at least 7 hours of sleep on at least 5 nights this week',
-    'Do not smoke or vape today',
-    'Do not drink alcohol today',
-    'Eat a healthy breakfast within 2 hours of waking'
-  ],
-  mind: [
-    'Meditate for {minutes} minutes',
-    'Journal for {minutes} minutes',
-    'Read one chapter before bed',
-    'Take a {minutes}-minute no-screen reset',
-    'Write 3 things I am grateful for',
-    'Do 10 minutes of breathwork'
-  ],
-  learning: [
-    'Study a skill for {minutes} minutes',
-    'Practice coding for {minutes} minutes',
-    'Review notes for {minutes} minutes',
-    'Watch one lesson and summarize it',
-    'Learn 10 new words',
-    'Build one tiny project step',
-    'Read one article in my field',
-    'Listen to one educational podcast episode',
-    'Write one reflection on what I learned recently',
-    'Teach one concept I recently learned to someone else',
-    'Do one practice problem in a subject I want to improve',
-    'Review one mistake and identify a next step to improve',
-    'Spend {minutes} minutes on deliberate practice',
-    'Read one chapter of a non-fiction book'
-  ],
-  relationships: [
-    'Have at least one social interaction today',
-    'Send one thoughtful message',
-    'Call family for {minutes} minutes',
-    'Have one device-free meal with someone',
-    'Give one sincere compliment',
-    'Ask one better question today',
-    'Check in with one friend',
-    'Have a 10-minute phone or video call with a friend or family member',
-    'Do one kind thing for someone else',
-    'Express appreciation to someone who helped you recently',
-    'Have a 15-minute in-person conversation with someone',
-    'Spend quality time with a pet',
-    'Write a handwritten note to someone',
-    'Reconnect with someone you haven\'t talked to in a while',
-    'Have a meaningful conversation with a colleague',
-    'Do one activity with a friend or family member',
-    'Share one positive thing about your day with someone else'
-  ],
-  organization: [
-    'Tidy one area for {minutes} minutes',
-    'Plan top 3 priorities for tomorrow',
-    'Inbox zero sprint for {minutes} minutes',
-    'Review budget for {minutes} minutes',
-    'Prep tomorrow clothes and workspace',
-    'Delete 20 unnecessary files/emails',
-    'Organize one area for {minutes} minutes',
-    'Do a {minutes}-minute digital declutter',
-    'Make a meal plan for the week',
-    'Do a {minutes}-minute tidy-up before bed',
-    'Write a to-do list for tomorrow',
-    'Set calendar reminders for important tasks/events',
-    'Review and update one recurring task or subscription',
-    'Spend {minutes} minutes on a project I\'ve been procrastinating',
-    'Clean up one area of your home',
-    'Organize one area of your home'
-  ]
-};
+const APP_MESSAGES = globalThis.MESSAGES;
+const APP_DAILY_PROMPTS = globalThis.DAILY_PROMPTS;
+const APP_GOAL_IDEAS = globalThis.GOAL_IDEAS;
+const SUN_ICON_SVG = '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 3.5V6"></path><path d="M12 18V20.5"></path><path d="M3.5 12H6"></path><path d="M18 12H20.5"></path><path d="m5.9 5.9 1.8 1.8"></path><path d="m16.3 16.3 1.8 1.8"></path><path d="m18.1 5.9-1.8 1.8"></path><path d="m7.7 16.3-1.8 1.8"></path></svg>';
+const MOON_ICON_SVG = '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7Z" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
 
 const EFFORT_MINUTES = {
   tiny: 10,
@@ -146,7 +28,6 @@ const state = loadState();
 const el = {
   themeToggleBtn: document.getElementById('theme-toggle-btn'),
   themeToggleIcon: document.getElementById('theme-toggle-icon'),
-  themeToggleLabel: document.getElementById('theme-toggle-label'),
   todayDate: document.getElementById('today-date'),
   motivation: document.getElementById('motivation'),
   statsGrid: document.getElementById('stats-grid'),
@@ -195,7 +76,7 @@ const expandedGoalIds = new Set();
 init();
 
 function init() {
-  applyTheme(state.theme || 'light');
+  applyTheme(state.theme || 'dark');
   bindEvents();
   renderAll();
   rotateMotivation(true);
@@ -211,7 +92,7 @@ function loadState() {
       promptResponses: [],
       promptDraft: '',
       selectedPage: 'dashboard',
-      theme: 'light',
+      theme: 'dark',
       selectedReflectionDate: todayKey(),
       lastCelebrationDate: null
     };
@@ -238,7 +119,7 @@ function loadState() {
       promptResponses: [],
       promptDraft: '',
       selectedPage: 'dashboard',
-      theme: 'light',
+      theme: 'dark',
       selectedReflectionDate: todayKey(),
       lastCelebrationDate: null
     };
@@ -338,7 +219,7 @@ function bindEvents() {
   });
 
   el.nextPromptBtn.addEventListener('click', () => {
-    state.selectedPromptIndex = (state.selectedPromptIndex + 1) % DAILY_PROMPTS.length;
+    state.selectedPromptIndex = (state.selectedPromptIndex + 1) % APP_DAILY_PROMPTS.length;
     state.promptDraft = '';
     saveState();
     renderPrompt();
@@ -412,7 +293,7 @@ function startPromptRotation() {
       return;
     }
 
-    state.selectedPromptIndex = (state.selectedPromptIndex + 1) % DAILY_PROMPTS.length;
+    state.selectedPromptIndex = (state.selectedPromptIndex + 1) % APP_DAILY_PROMPTS.length;
     saveState();
     renderPrompt();
     rotateMotivation(false);
@@ -481,6 +362,32 @@ function renderDashboard() {
   const activeGoals = state.goals.length;
   const doneToday = state.goals.filter((goal) => goal.completionHistory[today]?.status === 'done').length;
   const pendingGoals = state.goals.filter((goal) => !goal.completionHistory[today]?.status);
+  const isComplete = activeGoals > 0 && pendingGoals.length === 0;
+  const isDark = state.theme === 'dark';
+
+  el.dashboardFocusBadge.classList.remove(
+    'bg-transparent',
+    'text-white',
+    'border-white',
+    'text-teal-700',
+    'border-teal-300',
+    'text-teal-300',
+    'border-tide-300',
+    'bg-tide-50',
+    'text-tide-700',
+    'border-tide-200'
+  );
+
+  if (isComplete) {
+    el.dashboardFocusBadge.classList.add('bg-transparent');
+    if (isDark) {
+      el.dashboardFocusBadge.classList.add('text-teal-300', 'border-teal-300');
+    } else {
+      el.dashboardFocusBadge.classList.add('text-teal-700', 'border-teal-300');
+    }
+  } else {
+    el.dashboardFocusBadge.classList.add('bg-tide-50', 'text-tide-700', 'border-tide-200');
+  }
 
   if (activeGoals === 0) {
     el.dashboardFocusBadge.textContent = 'Start here';
@@ -621,7 +528,7 @@ function normalizePage(value) {
 
 function normalizeTheme(value) {
   const theme = typeof value === 'string' ? value : '';
-  return THEME_IDS.includes(theme) ? theme : 'light';
+  return THEME_IDS.includes(theme) ? theme : 'dark';
 }
 
 function applyTheme(theme) {
@@ -636,8 +543,8 @@ function applyTheme(theme) {
   }
 
   el.themeToggleBtn.setAttribute('aria-pressed', String(isDark));
-  el.themeToggleIcon.textContent = isDark ? '☀️' : '🌙';
-  el.themeToggleLabel.textContent = isDark ? 'Light mode' : 'Dark mode';
+  el.themeToggleBtn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+  el.themeToggleIcon.innerHTML = isDark ? SUN_ICON_SVG : MOON_ICON_SVG;
 }
 
 function renderGoalIdeas() {
@@ -648,8 +555,8 @@ function renderGoalIdeas() {
 
   const basePool =
     focus === 'all'
-      ? Object.values(GOAL_IDEAS).flat()
-      : GOAL_IDEAS[focus] || GOAL_IDEAS.energy;
+      ? Object.values(APP_GOAL_IDEAS).flat()
+      : APP_GOAL_IDEAS[focus] || APP_GOAL_IDEAS.energy;
 
   const shuffled = [...basePool]
     .map((idea) => ({ idea, sort: Math.random() }))
@@ -797,8 +704,8 @@ function renderPrompt() {
 }
 
 function getCurrentPrompt() {
-  const idx = state.selectedPromptIndex % DAILY_PROMPTS.length;
-  return DAILY_PROMPTS[idx];
+  const idx = state.selectedPromptIndex % APP_DAILY_PROMPTS.length;
+  return APP_DAILY_PROMPTS[idx];
 }
 
 function hydratePromptResponseInput() {
@@ -886,9 +793,9 @@ function normalizePromptResponses(value) {
 }
 
 function rotateMotivation(instant) {
-  const index = Math.floor(Math.random() * MESSAGES.length);
+  const index = Math.floor(Math.random() * APP_MESSAGES.length);
   if (instant) {
-    el.motivation.textContent = MESSAGES[index];
+    el.motivation.textContent = APP_MESSAGES[index];
     return;
   }
 
@@ -902,7 +809,7 @@ function rotateMotivation(instant) {
     { duration: 700, easing: 'ease-out' }
   );
   setTimeout(() => {
-    el.motivation.textContent = MESSAGES[index];
+    el.motivation.textContent = APP_MESSAGES[index];
   }, 260);
 }
 
@@ -1111,6 +1018,7 @@ function renderGoals() {
 
   el.goalsList.innerHTML = state.goals
     .map((goal, idx) => {
+      const isDark = state.theme === 'dark';
       const stats = computeGoalStats(goal);
       const isExpanded = expandedGoalIds.has(goal.id);
       goal.streakCount = stats.currentStreak;
@@ -1118,10 +1026,19 @@ function renderGoals() {
       const status = goal.completionHistory[key]?.status;
       const statusMeta =
         status === 'done'
-          ? { label: 'Done', classes: 'bg-teal-100 text-teal-800 border-teal-200' }
+          ? {
+              label: 'Done',
+              classes: isDark ? 'bg-transparent text-teal-300 border-teal-300' : 'bg-transparent text-teal-800 border-teal-300'
+            }
           : status === 'missed'
-            ? { label: 'Missed', classes: 'bg-red-100 text-red-700 border-red-200' }
-            : { label: 'No update', classes: 'bg-zinc-100 text-zinc-600 border-zinc-200' };
+            ? {
+                label: 'Missed',
+                classes: isDark ? 'bg-transparent text-red-300 border-red-300' : 'bg-transparent text-red-700 border-red-300'
+              }
+            : {
+                label: 'No update',
+                classes: isDark ? 'bg-transparent text-zinc-300 border-zinc-300' : 'bg-transparent text-zinc-600 border-zinc-300'
+              };
       const note = goal.completionHistory[key]?.note || '';
       const miniHistory = recentHistory(goal, 14);
 
@@ -1295,7 +1212,7 @@ function renderHeatmap() {
             ? 'bg-red-500'
             : 'bg-zinc-300';
       const textColorClass = point.type === 'none' ? 'text-zinc-900' : 'text-white';
-      const todayRing = point.date === today ? 'ring-1 ring-teal-300' : '';
+      const todayRing = point.date === today ? 'ring-1 ring-inset ring-teal-300' : '';
       const longDate = formatLongDateWithOrdinal(point.date);
 
       return `<button class="heat-cell w-4 h-4 sm:w-6 sm:h-6 ${colorClass} ${textColorClass} ${todayRing} focus-ring inline-flex items-center justify-center text-[9px] sm:text-[10px] font-semibold" title="${longDate}: ${point.label}" aria-label="${longDate} ${point.label}">${point.dayNumber}</button>`;

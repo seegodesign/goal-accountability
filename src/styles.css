@@ -1,0 +1,160 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 12%, rgba(20, 184, 166, 0.16), transparent 35%),
+    radial-gradient(circle at 88% 82%, rgba(6, 182, 212, 0.13), transparent 38%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 52%, #f0fdfa 100%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  min-height: 100vh;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(20, 184, 166, 0.18);
+}
+
+.card-enter {
+  opacity: 0;
+  transform: translateY(10px) scale(.985);
+  animation: floatIn .45s ease forwards;
+}
+
+@keyframes floatIn {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes confettiFall {
+  from {
+    transform: translateY(-12vh) rotate(0deg);
+    opacity: 0;
+  }
+  8% { opacity: 1; }
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.heat-cell,
+.mini-cell {
+  border-radius: 0.38rem;
+  transition: transform .18s ease, filter .2s ease;
+}
+
+.heat-cell:hover,
+.mini-cell:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid #14b8a6;
+  outline-offset: 2px;
+}
+
+.idea-chip {
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.22rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.idea-chip__prefix {
+  white-space: nowrap;
+}
+
+.idea-chip__viewport {
+  overflow: hidden;
+  min-width: 0;
+}
+
+.idea-chip__text {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.idea-chip.is-scrollable:hover .idea-chip__text,
+.idea-chip.is-scrollable:focus-visible .idea-chip__text {
+  animation: chipMarquee var(--scroll-duration, 6s) linear infinite alternate;
+}
+
+@keyframes chipMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-1 * var(--scroll-distance, 0px))); }
+}
+
+body.theme-dark {
+  color-scheme: dark;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(20, 184, 166, 0.22), transparent 35%),
+    radial-gradient(circle at 88% 82%, rgba(6, 182, 212, 0.18), transparent 38%),
+    linear-gradient(180deg, #0a0f13 0%, #0f1720 52%, #0f1a22 100%);
+  background-attachment: fixed;
+}
+
+body.theme-dark .glass {
+  background: rgba(15, 23, 32, 0.82);
+  border: 1px solid rgba(45, 212, 191, 0.22);
+}
+
+body.theme-dark .text-zinc-900 { color: #f3f4f6 !important; }
+body.theme-dark .text-zinc-800 { color: #e5e7eb !important; }
+body.theme-dark .text-zinc-700 { color: #d1d5db !important; }
+body.theme-dark .text-zinc-600 { color: #9ca3af !important; }
+body.theme-dark .text-zinc-500 { color: #94a3b8 !important; }
+
+body.theme-dark .bg-white,
+body.theme-dark .bg-white\/92,
+body.theme-dark .bg-white\/70,
+body.theme-dark .bg-white\/86 {
+  background-color: rgba(15, 23, 32, 0.9) !important;
+}
+
+body.theme-dark .bg-zinc-100 { background-color: #1f2937 !important; }
+body.theme-dark .bg-zinc-200 { background-color: #334155 !important; }
+body.theme-dark .bg-zinc-300 { background-color: #475569 !important; }
+body.theme-dark .bg-teal-50 { background-color: rgba(13, 148, 136, 0.14) !important; }
+
+body.theme-dark .border-zinc-200,
+body.theme-dark .border-zinc-300,
+body.theme-dark .border-teal-200,
+body.theme-dark .border-dashed {
+  border-color: rgba(148, 163, 184, 0.35) !important;
+}
+
+body.theme-dark .hover\:bg-zinc-50:hover {
+  background-color: rgba(51, 65, 85, 0.45) !important;
+}
+
+body.theme-dark .hover\:bg-tide-50:hover {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+}
+
+body.theme-dark .hover\:bg-teal-50:hover {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+}
+
+body.theme-dark .hover\:bg-red-100:hover {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+body.theme-dark .hover\:bg-teal-100:hover {
+  background-color: rgba(20, 184, 166, 0.22) !important;
+}

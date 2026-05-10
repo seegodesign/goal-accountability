@@ -1,3 +1,5 @@
+// Run this file once in the browser console to seed localStorage with mock data for testing and development.
+// Adjust the number of weeks in buildMockState() to see more or less history.
 (function () {
 var STORAGE_KEY = "accountability-app";
 
