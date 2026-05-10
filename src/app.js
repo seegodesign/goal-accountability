@@ -1182,10 +1182,7 @@ function renderGoals() {
                 label: 'Missed',
                 classes: isDark ? 'bg-transparent text-red-300 border-red-300' : 'bg-transparent text-red-700 border-red-300'
               }
-            : {
-                label: 'No update',
-                classes: isDark ? 'bg-transparent text-zinc-300 border-zinc-300' : 'bg-transparent text-zinc-600 border-zinc-300'
-              };
+            : null;
       const note = goal.completionHistory[key]?.note || '';
       const miniHistory = recentHistory(goal, 14);
 
@@ -1202,20 +1199,19 @@ function renderGoals() {
                 <p class="mt-1 text-sm font-semibold text-teal-700">Streak: ${goal.streakCount} day${goal.streakCount === 1 ? '' : 's'}<span class="hidden sm:inline"> in a row</span></p>
               </div>
             </div>
-            <div class="mt-2">
-              <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${statusMeta.classes}">${statusMeta.label}</span>
-            </div>
+            ${statusMeta ? `<div class="mt-2"><span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${statusMeta.classes}">${statusMeta.label}</span></div>` : ''}
           </button>
 
+          ${!status ? `
           <div class="${isExpanded ? 'hidden' : 'mt-2 px-2 sm:px-4 pb-2'}">
             <div class="flex flex-wrap gap-2">
-              <button class="focus-ring mark-btn inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${status === 'done' ? 'bg-transparent border-teal-500 text-teal-700' : 'bg-transparent border-teal-300 text-teal-700 hover:border-teal-500 hover:text-teal-800'}" data-goal-id="${goal.id}" data-status="done">
+              <button class="focus-ring mark-btn inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all bg-transparent border-teal-300 text-teal-700 hover:border-teal-500 hover:text-teal-800" data-goal-id="${goal.id}" data-status="done">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M3 8.5 6.2 11.5 13 4.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 <span>Done</span>
               </button>
-              <button class="focus-ring mark-btn inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${status === 'missed' ? 'bg-transparent border-red-500 text-red-700' : 'bg-transparent border-red-300 text-red-700 hover:border-red-500 hover:text-red-800'}" data-goal-id="${goal.id}" data-status="missed">
+              <button class="focus-ring mark-btn inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all bg-transparent border-red-300 text-red-700 hover:border-red-500 hover:text-red-800" data-goal-id="${goal.id}" data-status="missed">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M4 4 12 12" stroke-linecap="round"/>
                   <path d="M12 4 4 12" stroke-linecap="round"/>
@@ -1224,6 +1220,7 @@ function renderGoals() {
               </button>
             </div>
           </div>
+          ` : ''}
 
           <div id="goal-panel-${goal.id}" class="${isExpanded ? 'mt-4' : 'hidden'}">
             <div class="flex justify-end gap-1">
