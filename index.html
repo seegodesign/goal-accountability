@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <title>Quiet Commitments</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -45,7 +46,7 @@
 <body class="text-zinc-900 font-body antialiased">
   <div id="confetti-layer" class="fixed inset-0 pointer-events-none overflow-hidden z-50" aria-hidden="true"></div>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-28">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-16 sm:pb-20">
     <header class="glass rounded-3xl p-6 sm:p-8 shadow-warm mb-6 sm:mb-8" data-pages="dashboard">
       <div class="flex flex-col gap-2 lg:gap-4">
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
@@ -73,11 +74,29 @@
 
     <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8" id="stats-grid" aria-live="polite" data-pages="dashboard"></section>
 
+    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="reflection">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="font-display text-3xl sm:text-4xl text-zinc-900 inline-flex items-center gap-2">
+            <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              aria-hidden="true">
+              <path d="M6 4.75h8a3 3 0 0 1 3 3v11.5H9a3 3 0 0 1-3-3V4.75Z" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M9 8.5h6M9 12h6M9 15.5h4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Reflection</span>
+          </h2>
+          <p class="mt-1 text-sm sm:text-base text-zinc-600">Review your days, notice trends, and turn insight into better
+            choices.</p>
+        </div>
+      </div>
+    </section>
+
+
     <section class="grid lg:grid-cols-3 gap-6 mb-6 sm:mb-8" data-pages="dashboard">
       <article class="glass rounded-2xl p-5 sm:p-6 card-enter lg:col-span-2">
         <div class="flex items-center justify-between gap-3 mb-3">
           <h2 class="font-display text-2xl sm:text-3xl text-zinc-900">Today's Focus</h2>
-          <span id="dashboard-focus-badge" class="text-xs px-2 py-1 rounded-full bg-tide-50 text-tide-700 border border-tide-200">Ready</span>
+          <span id="dashboard-focus-badge" class="text-xs px-2 py-1 rounded-full text-tide-700 border border-tide-200">Ready</span>
         </div>
         <p id="dashboard-focus-summary" class="text-zinc-700 leading-relaxed"></p>
         <div id="dashboard-week-trend" class="mt-4"></div>
@@ -99,7 +118,7 @@
       <article class="glass rounded-2xl p-5 sm:p-6 card-enter">
         <h2 class="font-display text-2xl text-zinc-900 mb-2">Daily Prompt</h2>
         <p id="dashboard-prompt-preview" class="text-sm text-zinc-700 leading-relaxed"></p>
-        <button class="focus-ring mt-3 text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700" data-page-jump="consistency">
+        <button class="focus-ring mt-3 text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700" data-page-jump="reflection">
           Continue Writing
         </button>
       </article>
@@ -118,45 +137,9 @@
               <path d="M4 16.5 9 11.5 12.5 15 20 7.5" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M16 7.5H20V11.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <span>Consistency</span>
+            <span>Stats</span>
           </h2>
-          <p class="mt-1 text-sm sm:text-base text-zinc-600">Track patterns, capture prompts, and build momentum over time.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="consistency">
-      <h2 class="font-display text-2xl text-zinc-900 mb-3">Daily Prompt</h2>
-      <p id="prompt-box" class="text-zinc-700 leading-relaxed"></p>
-      <label class="block mt-4 text-sm text-zinc-600" for="prompt-response-input">Your response</label>
-      <textarea
-        id="prompt-response-input"
-        rows="5"
-        class="mt-2 w-full rounded-xl bg-white border border-zinc-300 p-3 text-zinc-900 placeholder-zinc-400 focus-ring"
-        placeholder="Write your response and save it to your prompt journal..."
-      ></textarea>
-      <div class="mt-3 flex flex-wrap gap-2">
-        <button id="save-prompt-response-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-tide-600 hover:bg-tide-500 text-white transition-colors">
-          Save response
-        </button>
-        <button id="next-prompt-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
-          New prompt
-        </button>
-      </div>
-      <p id="prompt-response-status" class="mt-2 text-xs text-zinc-500" aria-live="polite"></p>
-    </section>
-
-    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="reflection">
-      <div class="flex items-center justify-between gap-3">
-        <div>
-          <h2 class="font-display text-3xl sm:text-4xl text-zinc-900 inline-flex items-center gap-2">
-            <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <path d="M6 4.75h8a3 3 0 0 1 3 3v11.5H9a3 3 0 0 1-3-3V4.75Z" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M9 8.5h6M9 12h6M9 15.5h4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Reflection</span>
-          </h2>
-          <p class="mt-1 text-sm sm:text-base text-zinc-600">Review your days, notice trends, and turn insight into better choices.</p>
+          <p class="mt-1 text-sm sm:text-base text-zinc-600">Track patterns and build momentum over time.</p>
         </div>
       </div>
     </section>
@@ -177,8 +160,8 @@
     </section>
 
     <section class="glass rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 card-enter" data-pages="goals">
-      <div class="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4">
-        <div class="flex-1">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+        <div>
           <label for="goal-title" class="block text-sm text-zinc-600 mb-2">Add a goal</label>
           <input
             id="goal-title"
@@ -188,6 +171,21 @@
             placeholder="Read 20 minutes, workout, practice guitar..."
           />
         </div>
+        <div>
+          <label for="goal-category" class="block text-sm text-zinc-600 mb-2">Category</label>
+          <select id="goal-category" class="w-full rounded-xl bg-white border border-zinc-300 px-4 py-3 text-zinc-900 focus-ring">
+            <option value="">Choose a category (optional)</option>
+            <option value="finances">Finances</option>
+            <option value="health">Health</option>
+            <option value="learning">Learning</option>
+            <option value="mind">Mind</option>
+            <option value="organization">Organization</option>
+            <option value="relationships">Relationships</option>
+            <option value="work">Work</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-3 sm:mt-4 flex justify-end">
         <button id="add-goal-btn" class="focus-ring rounded-xl bg-tide-600 hover:bg-tide-500 transition-colors px-5 py-3 font-semibold text-white">
           Add Goal
         </button>
@@ -196,7 +194,7 @@
     </section>
 
     <section id="feature-grid" class="grid lg:grid-cols-3 gap-6 mb-12" data-pages="goals,consistency,reflection">
-      <div class="lg:col-span-2 flex flex-col gap-6" data-pages="goals,consistency">
+      <div class="lg:col-span-2 flex flex-col gap-6" data-pages="goals,consistency,reflection">
         <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="goals">
           <div class="flex items-center justify-between gap-3 mb-4">
             <h2 class="font-display text-2xl sm:text-3xl text-zinc-900">Your Goals</h2>
@@ -207,10 +205,30 @@
 
         <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="consistency">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="font-display text-2xl sm:text-3xl text-zinc-900">Consistency Heatmap</h2>
-            <span class="text-xs text-zinc-500">Last 140 days</span>
+            <h2 class="font-display text-2xl sm:text-3xl text-zinc-900">Stats Heatmap</h2>
+            <span id="heatmap-range-label" class="text-xs text-zinc-500">Last 140 days</span>
           </div>
-          <div class="overflow-x-auto pb-1">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <label class="text-sm text-zinc-600" for="heatmap-period">
+              Period
+              <select id="heatmap-period" class="mt-1 w-full rounded-xl bg-transparent border border-zinc-300 px-3 py-2 text-zinc-900 focus-ring">
+                <option value="30">30 days</option>
+                <option value="90">90 days</option>
+                <option value="140" selected>140 days</option>
+              </select>
+            </label>
+
+            <label class="text-sm text-zinc-600" for="heatmap-metric">
+              Metric
+              <select id="heatmap-metric" class="mt-1 w-full rounded-xl bg-transparent border border-zinc-300 px-3 py-2 text-zinc-900 focus-ring">
+                <option value="strict">Done only</option>
+                <option value="inclusive" selected>Done + partial</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="max-w-full overflow-x-auto pb-1">
             <div id="heatmap" class="inline-grid grid-flow-row auto-rows-max gap-1 sm:gap-1.5" style="grid-template-columns: repeat(20, max-content);"></div>
           </div>
           <div class="flex items-center gap-3 mt-4 text-xs text-zinc-500">
@@ -219,10 +237,113 @@
             <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-500"></span>Partial</span>
             <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-tide-500"></span>Done</span>
           </div>
+
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3" id="consistency-weekly-scorecard"></div>
+
+        </article>
+        <div class="rounded-xl border border-zinc-200 bg-transparent p-4">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="font-semibold text-zinc-900">30-day trend</h3>
+            <span class="text-xs text-zinc-500">Daily completion rate</span>
+          </div>
+          <div id="consistency-sparkline" class="mt-3 h-20 flex items-end gap-1"></div>
+        </div>
+
+        <div class="rounded-xl border border-zinc-200 bg-transparent p-4">
+          <h3 class="font-semibold text-zinc-900">Day-of-week performance</h3>
+          <div class="mt-3 max-w-full overflow-x-auto">
+            <div id="consistency-dow-performance" class="grid grid-cols-7 gap-2 min-w-[25rem] sm:min-w-0"></div>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-zinc-200 bg-transparent p-4">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="font-semibold text-zinc-900">Goal reliability ranking</h3>
+            <span class="text-xs text-zinc-500">Last 30 days</span>
+          </div>
+          <div id="consistency-reliability" class="mt-3 space-y-2"></div>
+        </div>
+
+        <div class="rounded-xl border border-zinc-200 bg-transparent p-4">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="font-semibold text-zinc-900">Last 14 days</h3>
+            <span class="text-xs text-zinc-500">Done/Missed + dominant outcome</span>
+          </div>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full min-w-[24rem] sm:min-w-[32rem] text-sm">
+              <thead>
+                <tr class="text-left text-zinc-500 border-b border-zinc-200">
+                  <th class="py-2 pr-3 font-medium">Date</th>
+                  <th class="py-2 pr-3 font-medium">Done</th>
+                  <th class="py-2 pr-3 font-medium">Missed</th>
+                  <th class="py-2 font-medium">Dominant</th>
+                </tr>
+              </thead>
+              <tbody id="consistency-last14-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="reflection">
+          <h2 class="font-display text-2xl text-zinc-900 mb-3">Daily Reflection</h2>
+          <p class="text-sm text-zinc-500 mb-3">A quiet place to be honest with yourself.</p>
+          <textarea
+            id="daily-reflection"
+            rows="10"
+            class="w-full rounded-xl bg-white border border-zinc-300 p-3 text-zinc-900 placeholder-zinc-400 focus-ring"
+            placeholder="What did I follow through on today? What made it easier or harder?"
+          ></textarea>
+          <p id="reflection-status" class="mt-2 text-xs text-zinc-500" aria-live="polite">Saved locally</p>
+        </article>
+
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="reflection">
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <h2 class="font-display text-2xl text-zinc-900">Reflection History</h2>
+            <button id="reflection-history-toggle-btn" class="focus-ring text-xs sm:text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700" aria-expanded="false" aria-controls="reflection-history-panel">
+              Show history
+            </button>
+          </div>
+          <div id="reflection-history-panel" class="history-panel" aria-hidden="true">
+            <p class="text-sm text-zinc-500 mb-3">Browse your previous daily reflections.</p>
+
+            <div class="flex flex-wrap items-end gap-2 mb-3">
+              <label class="text-sm text-zinc-600" for="reflection-history-date">
+                Date
+                <input id="reflection-history-date" type="date" class="mt-1 rounded-xl bg-white border border-zinc-300 px-3 py-2 text-zinc-900 focus-ring" />
+              </label>
+              <button id="reflection-prev-day-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
+                Previous day
+              </button>
+              <button id="reflection-next-day-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
+                Next day
+              </button>
+            </div>
+
+            <div id="reflection-history-view" class="rounded-xl bg-white border border-zinc-200 p-3 text-zinc-800 min-h-24"></div>
+
+            <h3 class="mt-4 text-sm uppercase tracking-wide text-zinc-500">All saved reflection days</h3>
+            <div id="reflection-history-list" class="mt-2 space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+          </div>
         </article>
       </div>
 
       <aside id="feature-aside" class="flex flex-col gap-6">
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="consistency">
+          <h2 class="font-display text-2xl text-zinc-900 mb-3">Miss Pattern Insights</h2>
+          <div id="consistency-insights" class="flex flex-wrap gap-2"></div>
+
+          <h3 class="mt-6 font-semibold text-zinc-900">Streak timeline (top 3 goals)</h3>
+          <div id="consistency-streak-timeline" class="mt-3 space-y-3"></div>
+        </article>
+
+        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="consistency">
+          <h2 class="font-display text-2xl text-zinc-900 mb-3">Stats Milestones</h2>
+          <div id="consistency-milestones" class="space-y-2"></div>
+
+          <h3 class="mt-6 font-semibold text-zinc-900">If this continues...</h3>
+          <p id="consistency-projection" class="mt-3 text-sm text-zinc-700"></p>
+        </article>
+
         <article class="glass rounded-2xl p-5 sm:p-6 card-enter sticky top-3 sm:top-4 z-30" id="goal-idea-helper" data-pages="goals">
           <h2 class="font-display text-2xl text-zinc-900 mb-2">Need Goal Ideas?</h2>
           <p class="text-sm text-zinc-500 mb-4">Pick a focus and effort level. Tap any suggestion to add it instantly.</p>
@@ -232,8 +353,8 @@
               Focus area
               <select id="idea-focus" class="mt-1 w-full rounded-xl bg-white border border-zinc-300 px-3 py-2 text-zinc-900 focus-ring">
                 <option value="all">Mix it up</option>
-                <option value="business">Business</option>
-                <option value="energy">Energy</option>
+                <option value="work">Work</option>
+                <option value="health">Health</option>
                 <option value="mind">Mind</option>
                 <option value="learning">Learning</option>
                 <option value="relationships">Relationships</option>
@@ -264,44 +385,37 @@
         </article>
 
         <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="reflection">
-          <h2 class="font-display text-2xl text-zinc-900 mb-3">Daily Reflection</h2>
-          <p class="text-sm text-zinc-500 mb-3">A quiet place to be honest with yourself.</p>
+          <h2 class="font-display text-2xl text-zinc-900 mb-3">Daily Prompt</h2>
+          <p id="prompt-box" class="text-zinc-700 leading-relaxed"></p>
+          <label class="block mt-4 text-sm text-zinc-600" for="prompt-response-input">Your response</label>
           <textarea
-            id="daily-reflection"
-            rows="10"
-            class="w-full rounded-xl bg-white border border-zinc-300 p-3 text-zinc-900 placeholder-zinc-400 focus-ring"
-            placeholder="What did I follow through on today? What made it easier or harder?"
+            id="prompt-response-input"
+            rows="7"
+            class="mt-2 w-full rounded-xl bg-white border border-zinc-300 p-3 text-zinc-900 placeholder-zinc-400 focus-ring"
+            placeholder="Write your response and save it to your prompt journal..."
           ></textarea>
-          <p id="reflection-status" class="mt-2 text-xs text-zinc-500" aria-live="polite">Saved locally</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button id="save-prompt-response-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-tide-600 hover:bg-tide-500 text-white transition-colors">
+              Save response
+            </button>
+            <button id="next-prompt-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
+              New prompt
+            </button>
+          </div>
+          <p id="prompt-response-status" class="mt-2 text-xs text-zinc-500" aria-live="polite"></p>
         </article>
 
         <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="reflection">
-          <h2 class="font-display text-2xl text-zinc-900 mb-3">Reflection History</h2>
-          <p class="text-sm text-zinc-500 mb-3">Browse your previous daily reflections.</p>
-
-          <div class="flex flex-wrap items-end gap-2 mb-3">
-            <label class="text-sm text-zinc-600" for="reflection-history-date">
-              Date
-              <input id="reflection-history-date" type="date" class="mt-1 rounded-xl bg-white border border-zinc-300 px-3 py-2 text-zinc-900 focus-ring" />
-            </label>
-            <button id="reflection-prev-day-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
-              Previous day
-            </button>
-            <button id="reflection-next-day-btn" class="focus-ring text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700">
-              Next day
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <h2 class="font-display text-2xl text-zinc-900">Past Responses</h2>
+            <button id="prompt-history-toggle-btn" class="focus-ring text-xs sm:text-sm rounded-lg px-3 py-2 bg-white hover:bg-tide-50 border border-zinc-300 transition-colors text-zinc-700" aria-expanded="false" aria-controls="prompt-history-panel">
+              Show history
             </button>
           </div>
-
-          <div id="reflection-history-view" class="rounded-xl bg-white border border-zinc-200 p-3 text-zinc-800 min-h-24"></div>
-
-          <h3 class="mt-4 text-sm uppercase tracking-wide text-zinc-500">All saved reflection days</h3>
-          <div id="reflection-history-list" class="mt-2 space-y-2 max-h-64 overflow-y-auto pr-1"></div>
-        </article>
-
-        <article class="glass rounded-2xl p-5 sm:p-6 card-enter" data-pages="consistency">
-          <h2 class="font-display text-2xl text-zinc-900 mb-3">Past Prompt Responses</h2>
-          <p class="text-sm text-zinc-500 mb-3">Your saved answers, newest first.</p>
-          <div id="prompt-response-history" class="space-y-3 max-h-[34rem] overflow-y-auto pr-1"></div>
+          <div id="prompt-history-panel" class="history-panel" aria-hidden="true">
+            <p class="text-sm text-zinc-500 mb-3">Your saved answers, newest first.</p>
+            <div id="prompt-response-history" class="space-y-3 max-h-[34rem] overflow-y-auto pr-1"></div>
+          </div>
         </article>
       </aside>
     </section>
@@ -322,12 +436,12 @@
           </svg>
           <span class="hidden sm:inline">Goals</span>
         </button>
-        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200 inline-flex items-center justify-center gap-1.5" data-page-target="consistency" aria-pressed="false" aria-label="Consistency">
+        <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200 inline-flex items-center justify-center gap-1.5" data-page-target="consistency" aria-pressed="false" aria-label="Stats">
           <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
             <path d="M4 16.5 9 11.5 12.5 15 20 7.5" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M16 7.5H20V11.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span class="hidden sm:inline">Consistency</span>
+          <span class="hidden sm:inline">Stats</span>
         </button>
         <button class="focus-ring page-tab rounded-xl px-2 py-2 text-xs sm:text-sm font-semibold text-zinc-600 bg-white border border-zinc-200 inline-flex items-center justify-center gap-1.5" data-page-target="reflection" aria-pressed="false" aria-label="Reflection">
           <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">

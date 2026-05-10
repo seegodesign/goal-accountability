@@ -48,7 +48,7 @@ const DAILY_PROMPTS = [
 ];
 
 const GOAL_IDEAS = {
-  business: [
+  work: [
     'Identify 1-3 critical tasks that truly move the needle',
     'Identify what I can delegate, automate, or eliminate to focus on the critical tasks',
     'Do one thing to move a project forward',
@@ -71,7 +71,28 @@ const GOAL_IDEAS = {
     'Do one thing to connect with someone in my industry or field',
     'Spend {minutes} minutes reflecting on my long-term goals and vision for my work'
   ],
-  energy: [
+  finances: [
+    'Review and update my budget for {minutes} minutes',
+    'Track all my expenses for the day',
+    'Do a {minutes}-minute financial declutter (cancel unused subscriptions, delete old payment methods, etc.)',
+    'Spend {minutes} minutes learning about a personal finance topic I\'m less familiar with',
+    'Write down one financial goal I have and a next step to work towards it',
+    'Review my recent purchases and identify one area to cut back on',
+    'Do one thing to increase my income (apply for a new job, reach out to a potential client, etc.)',
+    'Do one thing to save money (cook at home instead of eating out, find a cheaper alternative for something I regularly buy, etc.)',
+    'Write down one thing I appreciate about my current financial situation or progress recently',
+    'Do one thing to celebrate a recent financial win or milestone',
+    'Write down one thing I am looking forward to in my financial future and why',
+    'Spend {minutes} minutes reflecting on my relationship with money and how it aligns with my values',
+    'Do one thing to connect with someone about finances (talk to a financial advisor, discuss money goals with a partner, etc.)',
+    'Write down one question I have about something I want to learn related to personal finance',
+    'Do one thing to improve my financial organization or tracking system',
+    'Spend {minutes} minutes on a financial task I\'ve been procrastinating (reconciling accounts, applying for a credit card, etc.)',
+    'Write down one thing I appreciate about my financial habits or progress recently',
+    'Do one thing to celebrate a recent win or milestone in my financial journey',
+    'Write down one thing I am looking forward to in my financial future and why'
+  ],
+  health: [
     'Walk {minutes} minutes outside',
     'Do a {minutes}-minute bodyweight workout',
     'Sleep plan: in bed before 11:00 PM',

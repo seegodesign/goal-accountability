@@ -95,6 +95,20 @@ body {
   animation: chipMarquee var(--scroll-duration, 6s) linear infinite alternate;
 }
 
+.history-panel {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-8px);
+  transition: max-height .35s ease, opacity .25s ease, transform .25s ease;
+}
+
+.history-panel.is-open {
+  max-height: 72rem;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @keyframes chipMarquee {
   from { transform: translateX(0); }
   to { transform: translateX(calc(-1 * var(--scroll-distance, 0px))); }

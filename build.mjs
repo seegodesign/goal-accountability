@@ -43,7 +43,10 @@ async function buildHtml() {
 }
 
 async function copyStaticAssets() {
-  await fs.copyFile(path.join(rootDir, 'src', 'styles.css'), path.join(distDir, 'styles.css'));
+  await Promise.all([
+    fs.copyFile(path.join(rootDir, 'src', 'styles.css'), path.join(distDir, 'styles.css')),
+    fs.copyFile(path.join(rootDir, 'favicon.svg'), path.join(distDir, 'favicon.svg'))
+  ]);
 }
 
 async function runBuild() {
