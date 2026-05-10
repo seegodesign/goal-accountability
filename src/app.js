@@ -1207,6 +1207,24 @@ function renderGoals() {
             </div>
           </button>
 
+          <div class="${isExpanded ? 'hidden' : 'mt-2 px-2 sm:px-4 pb-2'}">
+            <div class="flex flex-wrap gap-2">
+              <button class="focus-ring mark-btn inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${status === 'done' ? 'bg-transparent border-teal-500 text-teal-700' : 'bg-transparent border-teal-300 text-teal-700 hover:border-teal-500 hover:text-teal-800'}" data-goal-id="${goal.id}" data-status="done">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 8.5 6.2 11.5 13 4.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Done</span>
+              </button>
+              <button class="focus-ring mark-btn inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${status === 'missed' ? 'bg-transparent border-red-500 text-red-700' : 'bg-transparent border-red-300 text-red-700 hover:border-red-500 hover:text-red-800'}" data-goal-id="${goal.id}" data-status="missed">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M4 4 12 12" stroke-linecap="round"/>
+                  <path d="M12 4 4 12" stroke-linecap="round"/>
+                </svg>
+                <span>Missed</span>
+              </button>
+            </div>
+          </div>
+
           <div id="goal-panel-${goal.id}" class="${isExpanded ? 'mt-4' : 'hidden'}">
             <div class="flex justify-end gap-1">
               <button class="focus-ring rename-goal inline-flex items-center gap-1.5 text-zinc-500 hover:text-tide-700 transition-colors px-2 py-1" data-goal-id="${goal.id}" aria-label="Rename goal ${escapeHtml(goal.title)}">
@@ -1225,7 +1243,7 @@ function renderGoals() {
               </button>
             </div>
 
-            <div class="grid sm:grid-cols-3 gap-3 mt-2">
+            <div class="grid md:grid-cols-3 gap-3 mt-2">
               <div class="rounded-xl bg-teal-50 p-3 border border-teal-200">
                 <p class="text-xs uppercase tracking-wide text-zinc-600">Current streak</p>
                 <p class="text-2xl font-bold text-teal-700 streak-value" data-target="${goal.streakCount}">${goal.streakCount}</p>
