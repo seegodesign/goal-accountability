@@ -1130,7 +1130,7 @@ function renderGoals() {
               </div>
               <div class="text-right shrink-0">
                 <p class="text-xs uppercase tracking-wide text-zinc-500">${stats.completionPct}% done</p>
-                <p class="mt-1 text-sm font-semibold text-teal-700">Streak: ${goal.streakCount} day${goal.streakCount === 1 ? '' : 's'} in a row</p>
+                <p class="mt-1 text-sm font-semibold text-teal-700">Streak: ${goal.streakCount} day${goal.streakCount === 1 ? '' : 's'}<span class="hidden sm:inline"> in a row</span></p>
               </div>
             </div>
             <div class="mt-2">
